@@ -130,4 +130,5 @@ class KnotGUI:
         self.knotDisplay.insert(END,self.knotScore)
 
     def saveFile(self):
-        x=1
+        saveDirectory = filedialog.askDirectory
+        print(saveDirectory)
