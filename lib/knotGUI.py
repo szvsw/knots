@@ -3,6 +3,8 @@ from tkinter import filedialog
 from tkinter.scrolledtext import ScrolledText
 from tkinter import ttk
 
+import os
+
 from lib import dictGenerator as dg
 from lib import substitutionCipher as sc
 
@@ -94,12 +96,12 @@ class KnotGUI:
         for child in self.mainframe.winfo_children():
             child.grid_configure(padx=2, pady=5)
 
-    # Methods
     # TODO : separate button callbacks and gui updates?
     # Open Button Callback
     def openFile(self):
-        # get path
+        # Get path
         self.path.set(filedialog.askopenfilename(initialdir = "./",title = "Select file",filetypes = (("text files","*.txt"),("all files","*.*"))))
+
         # Open and combine file to single string, update display
         with open(self.path.get()) as lines:
             for line in lines:
@@ -130,5 +132,11 @@ class KnotGUI:
         self.knotDisplay.insert(END,self.knotScore)
 
     def saveFile(self):
-        saveDirectory = filedialog.askDirectory
-        print(saveDirectory)
+        # TODO: Improve file/directory naming
+        # TODO: Decide if it should create new directory, or deposit in pre-existing directory.
+        saveDirectory = filedialog.askdirectory()
+        os.mkdir(saveDirectory+"/scores/")
+        with open(saveDirectory+"/scores/knotScore.txt",'w') as file:
+            file.write(self.knotScore)
+        with open(saveDirectory+"/scores/numericalRepresentation.txt",'w') as file:
+            file.write(self.numericalRepresentation)
