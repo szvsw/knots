@@ -10,22 +10,24 @@ def substitutionCipher(plaintext,cipher):
         x=x+1
     return crypttext
 
-# Convert digit to knotGUI
-# To do - make knots a class to add adjacency and easy access?
+# Convert Digit to Knot Quadrant
+# TODO: make knots a class to add adjacency and easy access?
 def digitToQuadrant(digit):
     digits = ["U_", "UU", "Uu", "UO", "Uo", "O_", "OU", "Ou", "OO", "Oo"]
     quadrant = digits[digit]
     return quadrant
 
+# Convert Integer to Knot
 def intToKnot(integer):
     digits = [0,0,0,0]
     knots = []
     for i in range(4):
-        digits[i] = integer // 10**i % 10
+        digits[i] = integer // 10**i % 10 # digit separator
         knots.append(digitToQuadrant(digits[i]))
-
     return knots
 
+
+# Pretty Printing Functions
 def formatInts(integerList):
     s = ""
     for i in integerList:
@@ -43,7 +45,7 @@ def formatKnots(knotList,rowSize):
             currentRow = currentRow+1
             s = s+"\n--- ROW %03d ---\n" % currentRow
         word = ""
-        for quadrant in knot: # Iterate over quadrants
+        for quadrant in knot: # Iterate over quadrants of knot
             word=word+quadrant+"."
         word = word[0:len(word)-1]
         s=s+word+"\n"

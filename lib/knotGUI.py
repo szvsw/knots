@@ -8,6 +8,8 @@ import os
 from lib import dictGenerator as dg
 from lib import substitutionCipher as sc
 
+# TODO: Add ability to use folder library as dict; select files for transcoding
+
 class KnotGUI:
 
     # Constructor
@@ -87,10 +89,6 @@ class KnotGUI:
         # Row 11
         self.closeButton = ttk.Button(self.mainframe, text="Close", command=self.master.quit)
         self.closeButton.grid(column=0,row=11,sticky='w')
-
-
-
-
 
         # Padding
         for child in self.mainframe.winfo_children():
