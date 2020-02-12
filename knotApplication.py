@@ -8,7 +8,7 @@ print("--------------------------------------")
 print('loading GUI...')
 
 root = tk.Tk()
-gui = gui.KnotGUI(root,450,500)
+gui = gui.KnotGUI(root,450,800)
 root.mainloop()
 
 print('closed GUI... goodbye!')
