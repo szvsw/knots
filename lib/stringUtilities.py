@@ -7,21 +7,32 @@ def formatInts(integerList):
     return s
 
 # Pretty Printing Function
-def formatKnots(knotList,rowSize):
-    wordCount = rowSize
+def formatKnotsA(knotList,rowSize):
     currentRow = 0
     s = "KNOT SCORE\n"
-    for knot in knotList: # Iterate over knots
-        if wordCount == rowSize: # Break on row size
-            wordCount = 0
-            currentRow = currentRow+1
-            s = s+"\n--- ROW %03d ---\n" % currentRow
-        word = ""
-        for quadrant in knot: # Iterate over quadrants of knot
-            word=word+quadrant+"."
-        word = word[0:len(word)-1]
-        s=s+word+"\n"
-        wordCount = wordCount + 1
+    while currentRow*rowSize < len(knotList): # stop when no knots remain
+        knotRow = knotList[currentRow*rowSize:(currentRow*rowSize+rowSize)] # get rows worth of knots
+        s = s+"\n--- ROW %03d ---\n" % currentRow
+
+        knotRow = "\n".join([*map(lambda x: ".".join(x),knotRow)])
+        s=s+knotRow+"\n"
+
+        currentRow = currentRow+1
+    return s
+
+def formatKnotsB(knotList,rowSize):
+    currentRow = 0
+    s = "KNOT SCORE\n"
+    while currentRow*rowSize < len(knotList):
+        knotRow = knotList[currentRow*rowSize:(currentRow*rowSize+rowSize)]
+        s=s+"\n--- ROW %03d ---\n" % currentRow
+        for knot in knotRow:
+            s = s+knot[0]+"|"+knot[1]+"  "
+        s = s+"\n"
+        for knot in knotRow:
+            s = s+knot[2]+"|"+knot[3]+"  "
+        s=s+"\n"
+        currentRow = currentRow + 1
     return s
 
 def fileToStr(path):

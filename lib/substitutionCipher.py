@@ -13,7 +13,7 @@ def substitutionCipher(plaintext,cipher):
 # Convert Digit to Knot Quadrant
 # TODO: make knots a class to add adjacency and easy access?
 def digitToQuadrant(digit):
-    digits = ["U_", "UU", "Uu", "UO", "Uo", "O_", "OU", "Ou", "OO", "Oo"]
+    digits = ["U ", "UU", "Uu", "UO", "Uo", "O ", "OU", "Ou", "OO", "Oo"]
     quadrant = digits[digit]
     return quadrant
 

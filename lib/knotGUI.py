@@ -42,6 +42,11 @@ class KnotGUI:
         self.subtext.trace('w',self.scrolledTextUpdater)
         self.subtextWords = []
 
+        self.keysubtext = StringVar(name="keysubtext")
+        self.keysubtext.set("")
+        # self.keysubtext.trace('w',self.scrolledTextUpdater)
+        self.keysubtextWords = []
+
         self.knottextWords = []
         self.knottext = StringVar(name="knottext")
         self.knottext.set("")
@@ -85,9 +90,16 @@ class KnotGUI:
             child.grid_configure(padx=5, pady=5)
 
         self.plaintextDisplay = ScrolledText(self.dictBrowserFrame,width=40,height=10,wrap=WORD)
-        self.plaintextDisplay.grid(column=7,row=0,columnspan=5)
+        self.plaintextDisplay.grid(column=7,row=0)
         self.keytextDisplay = ScrolledText(self.dictBrowserFrame,width=40,height=10,wrap=WORD)
-        self.keytextDisplay.grid(column=7,row=2,columnspan=5)
+        self.keytextDisplay.grid(column=7,row=2)
+
+        self.wordCountFrame = ttk.Frame(self.dictBrowserFrame)
+        self.wordCountFrame.grid(column=7,row=1)
+        self.wordCountTextLabel = ttk.Label(self.wordCountFrame,text="Word Count:")
+        self.wordCountTextLabel.grid(column=0,row=0,sticky="e")
+        self.wordCountNumberLabel = ttk.Label(self.wordCountFrame,textvariable=self.plaintextWordCount)
+        self.wordCountNumberLabel.grid(column=1,row=0,sticky="w")
 
         # Row 2
         self.dictSizeFrame = ttk.Frame(self.dictBrowserFrame)
@@ -96,10 +108,7 @@ class KnotGUI:
         self.dictSizeTextLabel.grid(column=0,row=0,sticky="e")
         self.dictSizeNumberLabel = ttk.Label(self.dictSizeFrame,textvariable=self.dicttextSize)
         self.dictSizeNumberLabel.grid(column=1,row=0,sticky="w")
-        self.wordCountTextLabel = ttk.Label(self.mainframe,text="Word Count:")
-        self.wordCountTextLabel.grid(column=2,row=2,sticky="e")
-        self.wordCountNumberLabel = ttk.Label(self.mainframe,textvariable=self.plaintextWordCount)
-        self.wordCountNumberLabel.grid(column=3,row=2,sticky="w")
+
 
         # Row 3
         self.substitionButton = ttk.Button(self.mainframe,text="Substitution Cipher",command = self.runSubstitution)
@@ -153,10 +162,13 @@ class KnotGUI:
         self.keytextWords = dg.splitToWords(self.keytext.get())
 
     def runSubstitution(self):
+        # TODO: Add ability to choose between knottextformatting
+        # TODO: Add OTP functionality
         self.subtextWords = sc.substitutionCipher(self.plaintextWords,self.dict)            # Transcoding
-        self.knottextWords = map(sc.intToKnot,self.subtextWords)                            # Transcoding
+        self.keysubtextWords = sc.substitutionCipher(self.keytextWords,self.dict)           # Transcoding
+        self.knottextWords = [*map(sc.intToKnot,self.subtextWords)]                         # Transcoding (map and unpack)
         self.subtext.set(strUtil.formatInts(self.subtextWords))                             # Numerical String Generation
-        self.knottext.set(strUtil.formatKnots(self.knottextWords,self.knotRowSize.get()))   # Knot Score String Generation
+        self.knottext.set(strUtil.formatKnotsA(self.knottextWords,self.knotRowSize.get()))  # Knot Score String Generation
 
     def saveFile(self):
         # TODO: Improve file/directory naming
