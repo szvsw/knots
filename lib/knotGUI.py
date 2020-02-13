@@ -44,8 +44,13 @@ class KnotGUI:
 
         self.keysubtext = StringVar(name="keysubtext")
         self.keysubtext.set("")
-        # self.keysubtext.trace('w',self.scrolledTextUpdater)
+        self.keysubtext.trace('w',self.scrolledTextUpdater)
         self.keysubtextWords = []
+
+        self.ciphertext = StringVar(name="ciphertext")
+        self.ciphertext.set("")
+        self.ciphertext.trace('w',self.scrolledTextUpdater)
+        self.ciphertextWords = []
 
         self.knottextWords = []
         self.knottext = StringVar(name="knottext")
@@ -67,6 +72,7 @@ class KnotGUI:
             rows += 1
 
         # Dictionary Browser
+        # TODO: Create subframes
         self.dictBrowserFrame = ttk.Frame(self.master)
         self.dictBrowserFrame.grid(column=0,row=0,sticky='we')
         self.folderButton = ttk.Button(self.dictBrowserFrame,text="Select Folder >",command=self.openFolder)
@@ -93,6 +99,10 @@ class KnotGUI:
         self.plaintextDisplay.grid(column=7,row=0)
         self.keytextDisplay = ScrolledText(self.dictBrowserFrame,width=40,height=10,wrap=WORD)
         self.keytextDisplay.grid(column=7,row=2)
+        self.subtextDisplay = ScrolledText(self.dictBrowserFrame,width=40,height=10,wrap=WORD)
+        self.subtextDisplay.grid(column=8,row=0)
+        self.keysubtextDisplay = ScrolledText(self.dictBrowserFrame,width=40,height=10,wrap=WORD)
+        self.keysubtextDisplay.grid(column=8,row=2)
 
         self.wordCountFrame = ttk.Frame(self.dictBrowserFrame)
         self.wordCountFrame.grid(column=7,row=1)
@@ -119,8 +129,8 @@ class KnotGUI:
         self.dropDownMenuLabel.grid(column=3,row=3,sticky='w')
 
         # Row 4
-        self.subtextDisplay = ScrolledText(self.mainframe,width=50,height=5,wrap=WORD)
-        self.subtextDisplay.grid(column=0,row=4,columnspan=5,sticky='w')
+        self.ciphertextDisplay = ScrolledText(self.mainframe,width=50,height=5,wrap=WORD)
+        self.ciphertextDisplay.grid(column=0,row=4,columnspan=5,sticky='w')
 
         # Row 5
         self.knottextDisplay = ScrolledText(self.mainframe,width=50,height=5,wrap=WORD)
@@ -161,14 +171,29 @@ class KnotGUI:
         self.selectFiles("dicttext","keytext")
         self.keytextWords = dg.splitToWords(self.keytext.get())
 
+    def clearPlaintext(self):
+        self.plaintext.set("")
+        self.plaintextWords = []
+        self.plaintextWordCount.set(0)
+
+    def clearOTPKey(self):
+        x=1
+
     def runSubstitution(self):
+        # Transcoding
+        self.subtextWords = sc.substitutionCipher(self.plaintextWords,self.dict)
+        self.keysubtextWords = sc.substitutionCipher(self.keytextWords,self.dict)
+        self.ciphertextWords = sc.otpCipher(self.subtextWords,self.keysubtextWords,self.dicttextSize.get())
+        self.knottextWords = [*map(sc.intToKnot,self.ciphertextWords)]
+
+        # Numerical String Generation
+        self.subtext.set(strUtil.formatInts(self.subtextWords))
+        self.keysubtext.set(strUtil.formatInts(self.keysubtextWords))
+        self.ciphertext.set(strUtil.formatInts(self.ciphertextWords))
+
+        # Knot String Formatting
         # TODO: Add ability to choose between knottextformatting
-        # TODO: Add OTP functionality
-        self.subtextWords = sc.substitutionCipher(self.plaintextWords,self.dict)            # Transcoding
-        self.keysubtextWords = sc.substitutionCipher(self.keytextWords,self.dict)           # Transcoding
-        self.knottextWords = [*map(sc.intToKnot,self.subtextWords)]                         # Transcoding (map and unpack)
-        self.subtext.set(strUtil.formatInts(self.subtextWords))                             # Numerical String Generation
-        self.knottext.set(strUtil.formatKnotsA(self.knottextWords,self.knotRowSize.get()))  # Knot Score String Generation
+        self.knottext.set(strUtil.formatKnotsA(self.knottextWords,self.knotRowSize.get()))
 
     def saveFile(self):
         # TODO: Improve file/directory naming

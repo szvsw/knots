@@ -1,14 +1,24 @@
 
 # Replace each word in list with its numerical ID.
-def substitutionCipher(plaintext,cipher):
-    crypttext=[]
-    x=0
+def substitutionCipher(plaintext,dict):
+    ciphertext=[]
     for word in plaintext:
-        dictEntry = cipher[word]
+        dictEntry = dict[word]
         id = dictEntry['id']
-        crypttext.append(id)
-        x=x+1
-    return crypttext
+        ciphertext.append(id)
+    return ciphertext
+
+def otpCipher(plaintext,keytext,modulus):
+    # TODO: combine substitution of plaintext and keytext with this function
+    newText = []
+    for i in range(0,len(plaintext)):
+        pad = 0
+        if (i<len(keytext)):
+            pad = keytext[i]
+        newnum = (plaintext[i]+pad) % modulus
+        newText.append(newnum)
+    return newText
+
 
 # Convert Digit to Knot Quadrant
 # TODO: make knots a class to add adjacency and easy access?
