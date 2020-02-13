@@ -9,37 +9,46 @@ from lib import dictGenerator as dg
 from lib import substitutionCipher as sc
 from lib import stringUtilities as strUtil
 
-# TODO: Add ability to use folder library as dict; select files for transcoding
-
 class KnotGUI:
 
     # Constructor
     def __init__(self,parent,width,height):
+        # Configure Window
         self.master = parent
         self.master.title("Knot Transcription")
         self.master.geometry(str(width)+"x"+str(height))
 
-        # GUI State Variables
+        # GUI State Fields
         self.sourceDirectory = ""
-
-        self.plaintext = StringVar(name="plaintext")
-        self.plaintext.set("")
 
         self.dict = {}
         self.dicttext = StringVar(name="dicttext")
         self.dicttext.set("")
-        self.dictSize = IntVar(name="dictsize")
+        self.dicttextSize = IntVar(name="dicttextSize")
 
-        self.words = []
-        self.wordCount = IntVar(name="wordcount")
+        self.plaintext = StringVar(name="plaintext")
+        self.plaintext.set("")
+        self.plaintext.trace('w',self.scrolledTextUpdater)
+        self.plaintextWords = []
+        self.plaintextWordCount = IntVar(name="plaintextWordCount")
 
-        self.substitutionText = []
-        self.numericalRepresentation = StringVar(name="numericalRepresentation")
-        self.knotText = []
+        self.keytext = StringVar(name="keytext")
+        self.keytext.set("")
+        self.keytext.trace('w',self.scrolledTextUpdater)
+        self.keytextWords = []
+
+        self.subtext = StringVar(name="subtext")
+        self.subtext.set("")
+        self.subtext.trace('w',self.scrolledTextUpdater)
+        self.subtextWords = []
+
+        self.knottextWords = []
+        self.knottext = StringVar(name="knottext")
+        self.knottext.set("")
+        self.knottext.trace('w',self.scrolledTextUpdater)
         self.knotRowSize = IntVar(name="knotRowSize")
         self.knotRowSize.set(1) # set the default option
         self.knotRowChoices = [i for i in range(1,10)]
-        self.knotScore = StringVar(name="knotscore")
 
         # Create Gridframe
         self.mainframe = ttk.Frame(self.master)
@@ -48,24 +57,48 @@ class KnotGUI:
         # create default grid sizing?
         rows = 0
         while rows < 50:
-            self.master.rowconfigure(rows, weight=1)
-            self.master.columnconfigure(rows,weight=1)
+            self.mainframe.rowconfigure(rows, weight=1)
+            self.mainframe.columnconfigure(rows,weight=1)
             rows += 1
 
+        # Dictionary Browser
+        self.dictBrowserFrame = ttk.Frame(self.master)
+        self.dictBrowserFrame.grid(column=0,row=0,sticky='we')
+        self.folderButton = ttk.Button(self.dictBrowserFrame,text="Select Folder >",command=self.openFolder)
+        self.folderButton.grid(column=0,row=1,sticky='ns')
+        self.directoryListbox = Listbox(self.dictBrowserFrame,selectmode=EXTENDED)
+        self.directoryListbox.grid(column=1,row=0,rowspan=3,sticky='news')
+        self.selectDicttext = ttk.Button(self.dictBrowserFrame,text="> Dictionary >",command=self.selectDicttext)
+        self.selectDicttext.grid(column=2,row=1)
+        self.dicttextListbox = Listbox(self.dictBrowserFrame)
+        self.dicttextListbox.grid(column=3,row=0,rowspan=3,sticky='news')
+        self.selectPlaintextButton = ttk.Button(self.dictBrowserFrame,text="> Plaintext >",command = self.selectPlaintext)
+        self.selectPlaintextButton.grid(column=5,row=0,sticky="ns")
+        self.selectotpKeyButton = ttk.Button(self.dictBrowserFrame,text="> OTP Key >",command = self.selectOTPKey)
+        self.selectotpKeyButton.grid(column=5,row=2,sticky="ns")
+        self.plaintextListbox = Listbox(self.dictBrowserFrame,selectmode=BROWSE)
+        self.plaintextListbox.grid(column=6,row=0,sticky='ew')
+        self.keytextListbox = Listbox(self.dictBrowserFrame,selectmode=BROWSE)
+        self.keytextListbox.grid(column=6,row=2,sticky='ew')
 
-        # Row 1
-        self.plaintextDisplay = ScrolledText(self.mainframe,width=50,height=5,wrap=WORD)
-        self.plaintextDisplay.grid(column=0,row=1,columnspan=5)
+        for child in self.dictBrowserFrame.winfo_children():
+            child.grid_configure(padx=5, pady=5)
 
+        self.plaintextDisplay = ScrolledText(self.dictBrowserFrame,width=40,height=10,wrap=WORD)
+        self.plaintextDisplay.grid(column=7,row=0,columnspan=5)
+        self.keytextDisplay = ScrolledText(self.dictBrowserFrame,width=40,height=10,wrap=WORD)
+        self.keytextDisplay.grid(column=7,row=2,columnspan=5)
 
         # Row 2
-        self.dictSizeTextLabel = ttk.Label(self.mainframe,text="Dictionary Size:")
-        self.dictSizeTextLabel.grid(column=0,row=2,sticky="e")
-        self.dictSizeNumberLabel = ttk.Label(self.mainframe,textvariable=self.dictSize)
-        self.dictSizeNumberLabel.grid(column=1,row=2,sticky="w")
+        self.dictSizeFrame = ttk.Frame(self.dictBrowserFrame)
+        self.dictSizeFrame.grid(column=3,row=3)
+        self.dictSizeTextLabel = ttk.Label(self.dictSizeFrame,text="Dictionary Size:")
+        self.dictSizeTextLabel.grid(column=0,row=0,sticky="e")
+        self.dictSizeNumberLabel = ttk.Label(self.dictSizeFrame,textvariable=self.dicttextSize)
+        self.dictSizeNumberLabel.grid(column=1,row=0,sticky="w")
         self.wordCountTextLabel = ttk.Label(self.mainframe,text="Word Count:")
         self.wordCountTextLabel.grid(column=2,row=2,sticky="e")
-        self.wordCountNumberLabel = ttk.Label(self.mainframe,textvariable=self.wordCount)
+        self.wordCountNumberLabel = ttk.Label(self.mainframe,textvariable=self.plaintextWordCount)
         self.wordCountNumberLabel.grid(column=3,row=2,sticky="w")
 
         # Row 3
@@ -77,13 +110,12 @@ class KnotGUI:
         self.dropDownMenuLabel.grid(column=3,row=3,sticky='w')
 
         # Row 4
-        self.substitutionDisplay = ScrolledText(self.mainframe,width=50,height=5,wrap=WORD)
-        self.substitutionDisplay.grid(column=0,row=4,columnspan=5,sticky='w')
-
+        self.subtextDisplay = ScrolledText(self.mainframe,width=50,height=5,wrap=WORD)
+        self.subtextDisplay.grid(column=0,row=4,columnspan=5,sticky='w')
 
         # Row 5
-        self.knotDisplay = ScrolledText(self.mainframe,width=50,height=5,wrap=WORD)
-        self.knotDisplay.grid(column=0,row=5,columnspan=5,sticky='w')
+        self.knottextDisplay = ScrolledText(self.mainframe,width=50,height=5,wrap=WORD)
+        self.knottextDisplay.grid(column=0,row=5,columnspan=5,sticky='w')
 
         # Row 10
         self.saveButton = ttk.Button(self.mainframe,text="Save",command=self.saveFile)
@@ -93,87 +125,71 @@ class KnotGUI:
         self.closeButton = ttk.Button(self.mainframe, text="Close", command=self.master.quit)
         self.closeButton.grid(column=0,row=11,sticky='w')
 
-        # Row 12
-        self.dictBrowserFrame = ttk.Frame(self.master)
-        self.dictBrowserFrame.grid(column=0,row=0,sticky='we')
-        self.directoryList = Listbox(self.dictBrowserFrame,selectmode=EXTENDED)
-        self.directoryList.grid(column=0,row=0,rowspan=3,sticky='ew')
-        self.addFilestoDictButton = ttk.Button(self.dictBrowserFrame,text="> Add to Dictionary >",command=self.addFilesToDict)
-        self.addFilestoDictButton.grid(column=1,row=1,sticky='ew')
-        self.dictionaryList = Listbox(self.dictBrowserFrame)
-        self.dictionaryList.grid(column=2,row=0,rowspan=3,sticky='ew')
-        self.folderButton = ttk.Button(self.dictBrowserFrame,text="Select Folder",command=self.openFolder)
-        self.folderButton.grid(column=0,row=3,sticky='ew')
-        self.selectPlaintextButton = ttk.Button(self.dictBrowserFrame,text="Select Plaintext",command = self.selectPlaintext)
-        self.selectPlaintextButton.grid(column=2,row=3,sticky='ew')
-
-        # Row 13
-
         # Padding
         for child in self.mainframe.winfo_children():
             child.grid_configure(padx=2, pady=5)
 
-    # TODO : separate button callbacks and gui updates?
     def openFolder(self):
         self.sourceDirectory = filedialog.askdirectory()
         files = os.listdir(self.sourceDirectory)
-        self.directoryList.delete(0,END)
+        self.directoryListbox.delete(0,END)
         for file in files:
             if file.endswith(".txt"):
-                self.directoryList.insert(END,file)
+                self.directoryListbox.insert(END,file)
 
-    def addFilesToDict(self):
-        selectedIndices = self.directoryList.curselection()
-        selectedFilepaths = map(self.directoryList.get,selectedIndices)
-        text = ""
-        for file in selectedFilepaths:
-            text = text+strUtil.fileToStr(self.sourceDirectory+"/"+file)+"\n"
-            self.dictionaryList.insert(END,file)
-        self.dicttext.set(self.dicttext.get()+text)
+    def selectDicttext(self):
+        self.selectFiles("directory","dicttext")
         dictWords = dg.splitToWords(self.dicttext.get())
         self.dict,dictsize = dg.createDict(dictWords)
-        self.dictSize.set(dictsize)
+        self.dicttextSize.set(dictsize)
 
     def selectPlaintext(self):
-        selectedIndices = self.dictionaryList.curselection()
-        selectedFilepaths = map(self.dictionaryList.get,selectedIndices)
-        text = ""
-        for file in selectedFilepaths:
-            path = self.sourceDirectory+"/"+file
-            text = text+strUtil.fileToStr(path)+"\n"
-        self.plaintext.set(text)
+        self.selectFiles("dicttext","plaintext")
+        self.plaintextWords = dg.splitToWords(self.plaintext.get())
+        self.plaintextWordCount.set(len(self.plaintextWords))
 
-        self.words = dg.splitToWords(self.plaintext.get())
-        self.wordCount.set(len(self.words))
-        # Update Display
-        # TODO: put in single gui updater callback
-        self.plaintextDisplay.delete(1.0,END)
-        self.plaintextDisplay.insert(END,self.plaintext.get())
-        self.plaintextDisplay.config(state=DISABLED)
+    def selectOTPKey(self):
+        self.selectFiles("dicttext","keytext")
+        self.keytextWords = dg.splitToWords(self.keytext.get())
 
     def runSubstitution(self):
-        # Transcoding
-        self.substitutionText = sc.substitutionCipher(self.words,self.dict)
-        self.knotText = map(sc.intToKnot,self.substitutionText)
-
-        # Numerical String Generation
-        self.numericalRepresentation.set(strUtil.formatInts(self.substitutionText))
-        # TODO: move to gui callback
-        self.substitutionDisplay.delete(1.0,END)
-        self.substitutionDisplay.insert(END,self.numericalRepresentation.get())
-
-        # Knot Score String Generation
-        self.knotScore.set(strUtil.formatKnots(self.knotText,self.knotRowSize.get()))
-        # TODO: move to gui callback
-        self.knotDisplay.delete(1.0,END)
-        self.knotDisplay.insert(END,self.knotScore.get())
+        self.subtextWords = sc.substitutionCipher(self.plaintextWords,self.dict)            # Transcoding
+        self.knottextWords = map(sc.intToKnot,self.subtextWords)                            # Transcoding
+        self.subtext.set(strUtil.formatInts(self.subtextWords))                             # Numerical String Generation
+        self.knottext.set(strUtil.formatKnots(self.knottextWords,self.knotRowSize.get()))   # Knot Score String Generation
 
     def saveFile(self):
         # TODO: Improve file/directory naming
         # TODO: Decide if it should create new directory, or deposit in pre-existing directory.
         saveDirectory = filedialog.askdirectory()
         os.mkdir(saveDirectory+"/scores/")
-        with open(saveDirectory+"/scores/knotScore.txt",'w') as file:
-            file.write(self.knotScore.get())
-        with open(saveDirectory+"/scores/numericalRepresentation.txt",'w') as file:
-            file.write(self.numericalRepresentation.get())
+        with open(saveDirectory+"/scores/knottext.txt",'w') as file:
+            file.write(self.knottext.get())
+        with open(saveDirectory+"/scores/subtext.txt",'w') as file:
+            file.write(self.subtext.get())
+
+    def scrolledTextUpdater(self,objectName,*args):
+        # Overwrite scrolled text when traced StringVar changes
+        obj = getattr(self,objectName+"Display")
+        obj.config(state=NORMAL)
+        obj.delete(1.0,END)
+        obj.insert(END,getattr(self,objectName).get())
+        obj.config(state=DISABLED)
+
+    def selectFiles(self,source,destination):
+        # Get source Listbox selected indices as filenames
+        indices = getattr(self,source+"Listbox").curselection()
+        filenames = map(getattr(self,source+"Listbox").get,indices)
+
+        # Clear Destination Listbox
+        getattr(self,destination+"Listbox").delete(0,END)
+
+        # Convert selected files to strings and concatenate
+        text = ""
+        for file in filenames:
+            path = self.sourceDirectory+"/"+file
+            text = text+strUtil.fileToStr(path)+"\n"
+            getattr(self,destination+"Listbox").insert(END,file)
+
+        # Set destination StringVar
+        getattr(self,destination).set(text)
