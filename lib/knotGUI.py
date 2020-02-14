@@ -53,6 +53,11 @@ class KnotGUI:
         self.ciphertext.trace('w',self.scrolledTextUpdater)
         self.ciphertextWords = []
 
+        self.decrypttext = StringVar(name="decrypttext")
+        self.decrypttext.set("")
+        self.decrypttext.trace('w',self.scrolledTextUpdater)
+        self.decrypttextWords = []
+
         self.knottextWords = []
         self.knottext = StringVar(name="knottext")
         self.knottext.set("")
@@ -89,7 +94,7 @@ class KnotGUI:
         self.dictSelectionFrame = ttk.Frame(self.dictBrowserFrame)
         self.dictSelectionFrame.grid(column=2,row=1)
         self.selectDicttext = ttk.Button(self.dictSelectionFrame,text="> Dictionary >",command=self.selectDicttext)
-        self.selectDicttext.grid(column=0,row=0)
+        self.selectDicttext.grid(column=0,row=0,sticky='ew')
 
         self.dictSizeFrame = ttk.Frame(self.dictSelectionFrame)
         self.dictSizeFrame.grid(column=0,row=1)
@@ -189,12 +194,16 @@ class KnotGUI:
         self.knotPrintStyleMenuLabel.grid(column=1,row=1,sticky='w')
 
         # Row 4
-        self.ciphertextDisplay = ScrolledText(self.mainframe,width=50,height=5,wrap=WORD)
+        self.ciphertextDisplay = ScrolledText(self.mainframe,width=100,height=10,wrap=WORD)
         self.ciphertextDisplay.grid(column=0,row=4,columnspan=5,sticky='w')
 
         # Row 5
-        self.knottextDisplay = ScrolledText(self.mainframe,width=50,height=5,wrap=WORD)
+        self.knottextDisplay = ScrolledText(self.mainframe,width=100,height=10,wrap=WORD)
         self.knottextDisplay.grid(column=0,row=5,columnspan=5,sticky='w')
+
+        # Row 6
+        self.decrypttextDisplay = ScrolledText(self.mainframe,width=100,height=10,wrap=WORD)
+        self.decrypttextDisplay.grid(column=0,row=6,columnspan=5,sticky='w')
 
         # Row 10
         self.saveButton = ttk.Button(self.mainframe,text="Save",command=self.saveFile)
@@ -255,10 +264,14 @@ class KnotGUI:
         self.ciphertextWords = sc.otpCipher(self.subtextWords,self.keysubtextWords,self.dicttextSize.get())
         self.knottextWords = [*map(sc.intToKnot,self.ciphertextWords)]
 
+        self.decrypttextWords = sc.decrypt(self.dict,self.ciphertextWords)
+
         # Numerical String Generation
         self.subtext.set(strUtil.formatInts(self.subtextWords))
         self.keysubtext.set(strUtil.formatInts(self.keysubtextWords))
         self.ciphertext.set(strUtil.formatInts(self.ciphertextWords))
+
+        self.decrypttext.set(" ".join(self.decrypttextWords))
 
         # Knot String Formatting
         # TODO: Add ability to choose between knottextformatting

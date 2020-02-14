@@ -35,3 +35,15 @@ def intToKnot(integer):
         digits[i] = integer // 10**i % 10 # digit separator
         knots.append(digitToQuadrant(digits[i]))
     return knots
+
+def invertID(dict,id):
+    for key, value in dict.items():
+         if id == value['id']:
+             return key
+
+def decrypt(dict,ciphertext):
+    plaintext = []
+    for id in ciphertext:
+        newWord = invertID(dict,id)
+        plaintext.append(newWord)
+    return plaintext
