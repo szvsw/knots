@@ -59,7 +59,10 @@ class KnotGUI:
         self.knottext.trace('w',self.scrolledTextUpdater)
         self.knotRowSize = IntVar(name="knotRowSize")
         self.knotRowSize.set(1) # set the default option
-        self.knotRowChoices = [i for i in range(1,10)]
+        self.knotRowSizeChoices = [i for i in range(1,10)]
+        self.knotPrintStyleChoices = ["Simple", "Pretty"]
+        self.knotPrintStyle = StringVar(name="knotPrintStyle")
+        self.knotPrintStyle.set("")
 
         # Create Gridframe
         self.mainframe = ttk.Frame(self.master)
@@ -95,7 +98,7 @@ class KnotGUI:
         self.dictSizeNumberLabel = ttk.Label(self.dictSizeFrame,textvariable=self.dicttextSize)
         self.dictSizeNumberLabel.grid(column=1,row=0,sticky="nw")
 
-        self.dicttextListbox = Listbox(self.dictBrowserFrame)
+        self.dicttextListbox = Listbox(self.dictBrowserFrame,selectmode=EXTENDED)
         self.dicttextListbox.grid(column=3,row=0,rowspan=3,sticky='news')
 
         self.plaintextFrame = ttk.Frame(self.dictBrowserFrame)
@@ -163,6 +166,8 @@ class KnotGUI:
         for child in self.keytextFrame.winfo_children():
             child.grid_configure(padx=2)
 
+        ttk.Label(self.plaintextFrame,text="files").grid(column=1,row=2)
+
 
 
         # Row 2
@@ -170,12 +175,18 @@ class KnotGUI:
 
 
         # Row 3
-        self.substitionButton = ttk.Button(self.mainframe,text="Substitution Cipher",command = self.runSubstitution)
-        self.substitionButton.grid(column=0,row=3,sticky='we')
-        self.dropDownMenu = ttk.OptionMenu(self.mainframe, self.knotRowSize, *self.knotRowChoices)
-        self.dropDownMenu.grid(column=2,row=3,sticky='e')
-        self.dropDownMenuLabel = ttk.Label(self.mainframe, text="Knots/Row")
-        self.dropDownMenuLabel.grid(column=3,row=3,sticky='w')
+        self.substitutionButtonFrame = ttk.Frame(self.mainframe)
+        self.substitutionButtonFrame.grid(column=0,row=3,sticky="w")
+        self.substitutionButton = ttk.Button(self.substitutionButtonFrame,text="Substitution Cipher",command = self.runSubstitution)
+        self.substitutionButton.grid(column=0,row=2,columnspan=2,sticky='news')
+        self.dropDownMenu = ttk.OptionMenu(self.substitutionButtonFrame, self.knotRowSize, *self.knotRowSizeChoices)
+        self.dropDownMenu.grid(column=0,row=0,sticky='ew')
+        self.dropDownMenuLabel = ttk.Label(self.substitutionButtonFrame, text="Knots/Row")
+        self.dropDownMenuLabel.grid(column=1,row=0,sticky='w')
+        self.knotPrintStyleMenu = ttk.OptionMenu(self.substitutionButtonFrame,self.knotPrintStyle, *self.knotPrintStyleChoices)
+        self.knotPrintStyleMenu.grid(column=0,row=1,sticky='ew')
+        self.knotPrintStyleMenuLabel = ttk.Label(self.substitutionButtonFrame, text="Formatting")
+        self.knotPrintStyleMenuLabel.grid(column=1,row=1,sticky='w')
 
         # Row 4
         self.ciphertextDisplay = ScrolledText(self.mainframe,width=50,height=5,wrap=WORD)
@@ -226,12 +237,16 @@ class KnotGUI:
         self.plaintextWords = []
         self.plaintextWordCount.set(0)
         self.plaintextListbox.delete(0,END)
+        self.subtext.set("")
+        self.subtextWords = []
 
     def clearOTPKey(self):
         self.keytext.set("")
         self.keytextWords = []
         self.keytextWordCount.set(0)
         self.keytextListbox.delete(0,END)
+        self.keysubtext.set("")
+        self.keysubtextWords = []
 
     def runSubstitution(self):
         # Transcoding
@@ -247,7 +262,8 @@ class KnotGUI:
 
         # Knot String Formatting
         # TODO: Add ability to choose between knottextformatting
-        self.knottext.set(strUtil.formatKnotsA(self.knottextWords,self.knotRowSize.get()))
+        strFormatter = getattr(strUtil,"formatKnots"+self.knotPrintStyle.get())
+        self.knottext.set(strFormatter(self.knottextWords,self.knotRowSize.get()))
 
     def saveFile(self):
         # TODO: Improve file/directory naming

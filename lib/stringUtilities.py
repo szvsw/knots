@@ -7,7 +7,7 @@ def formatInts(integerList):
     return s
 
 # Pretty Printing Function
-def formatKnotsA(knotList,rowSize):
+def formatKnotsSimple(knotList,rowSize):
     currentRow = 0
     s = "KNOT SCORE\n"
     while currentRow*rowSize < len(knotList): # stop when no knots remain
@@ -20,7 +20,7 @@ def formatKnotsA(knotList,rowSize):
         currentRow = currentRow+1
     return s
 
-def formatKnotsB(knotList,rowSize):
+def formatKnotsPretty(knotList,rowSize):
     currentRow = 0
     s = "KNOT SCORE\n"
     while currentRow*rowSize < len(knotList):
