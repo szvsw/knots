@@ -36,6 +36,7 @@ class KnotGUI:
         self.keytext.set("")
         self.keytext.trace('w',self.scrolledTextUpdater)
         self.keytextWords = []
+        self.keytextWordCount = IntVar(name="keytextWordCount")
 
         self.subtext = StringVar(name="subtext")
         self.subtext.set("")
@@ -67,7 +68,7 @@ class KnotGUI:
         # create default grid sizing?
         rows = 0
         while rows < 50:
-            self.mainframe.rowconfigure(rows, weight=1)
+            self.mainframe.rowconfigure(rows, minsize=10)
             self.mainframe.columnconfigure(rows,weight=1)
             rows += 1
 
@@ -79,21 +80,70 @@ class KnotGUI:
         self.folderButton.grid(column=0,row=1,sticky='ns')
         self.directoryListbox = Listbox(self.dictBrowserFrame,selectmode=EXTENDED)
         self.directoryListbox.grid(column=1,row=0,rowspan=3,sticky='news')
-        self.selectDicttext = ttk.Button(self.dictBrowserFrame,text="> Dictionary >",command=self.selectDicttext)
-        self.selectDicttext.grid(column=2,row=1)
+
+
+
+        self.dictSelectionFrame = ttk.Frame(self.dictBrowserFrame)
+        self.dictSelectionFrame.grid(column=2,row=1)
+        self.selectDicttext = ttk.Button(self.dictSelectionFrame,text="> Dictionary >",command=self.selectDicttext)
+        self.selectDicttext.grid(column=0,row=0)
+
+        self.dictSizeFrame = ttk.Frame(self.dictSelectionFrame)
+        self.dictSizeFrame.grid(column=0,row=1)
+        self.dictSizeTextLabel = ttk.Label(self.dictSizeFrame,text="Dictionary Size:")
+        self.dictSizeTextLabel.grid(column=0,row=0,sticky="ne")
+        self.dictSizeNumberLabel = ttk.Label(self.dictSizeFrame,textvariable=self.dicttextSize)
+        self.dictSizeNumberLabel.grid(column=1,row=0,sticky="nw")
+
+
         self.dicttextListbox = Listbox(self.dictBrowserFrame)
         self.dicttextListbox.grid(column=3,row=0,rowspan=3,sticky='news')
-        self.selectPlaintextButton = ttk.Button(self.dictBrowserFrame,text="> Plaintext >",command = self.selectPlaintext)
-        self.selectPlaintextButton.grid(column=5,row=0,sticky="ns")
-        self.selectotpKeyButton = ttk.Button(self.dictBrowserFrame,text="> OTP Key >",command = self.selectOTPKey)
-        self.selectotpKeyButton.grid(column=5,row=2,sticky="ns")
+
         self.plaintextListbox = Listbox(self.dictBrowserFrame,selectmode=BROWSE)
         self.plaintextListbox.grid(column=6,row=0,sticky='ew')
         self.keytextListbox = Listbox(self.dictBrowserFrame,selectmode=BROWSE)
         self.keytextListbox.grid(column=6,row=2,sticky='ew')
 
+
+        self.plaintextButtonsFrame = ttk.Frame(self.dictBrowserFrame)
+        self.plaintextButtonsFrame.grid(column = 5,row=0,sticky="ns")
+        self.plaintextButtonsFrame.rowconfigure(0,weight=1)
+        self.plaintextButtonsFrame.columnconfigure(0,minsize = 120)
+        self.selectPlaintextButton = ttk.Button(self.plaintextButtonsFrame,text="> Plaintext >",command = self.selectPlaintext)
+        self.selectPlaintextButton.grid(column=0,row=0,sticky="news")
+        self.clearPlaintextButton = ttk.Button(self.plaintextButtonsFrame,text="Clear Plaintext", command = self.clearPlaintext)
+        self.clearPlaintextButton.grid(column=0,row=1,sticky='news')
+
+        self.wordCountFrame = ttk.Frame(self.plaintextButtonsFrame)
+        self.wordCountFrame.grid(column=0,row=2)
+        self.wordCountTextLabel = ttk.Label(self.wordCountFrame,text="Word Count:")
+        self.wordCountTextLabel.grid(column=0,row=0,sticky="e")
+        self.wordCountNumberLabel = ttk.Label(self.wordCountFrame,textvariable=self.plaintextWordCount)
+        self.wordCountNumberLabel.grid(column=1,row=0,sticky="w")
+
+
+
+        self.keytextButtonsFrame = ttk.Frame(self.dictBrowserFrame)
+        self.keytextButtonsFrame.grid(column = 5,row=2,sticky="ns")
+        self.keytextButtonsFrame.rowconfigure(0,weight=1)
+        self.keytextButtonsFrame.columnconfigure(0,minsize = 120)
+        self.selectotpKeyButton = ttk.Button(self.keytextButtonsFrame,text="> OTP Key >",command = self.selectOTPKey)
+        self.selectotpKeyButton.grid(column=0,row=0,sticky="news")
+        self.clearKeytextButton = ttk.Button(self.keytextButtonsFrame,text="Clear OTP Key", command = self.clearOTPKey)
+        self.clearKeytextButton.grid(column=0,row=1,sticky='news')
+
+        self.keywordCountFrame = ttk.Frame(self.keytextButtonsFrame)
+        self.keywordCountFrame.grid(column=0,row=2)
+        self.keywordCountTextLabel = ttk.Label(self.keywordCountFrame,text="Word Count:")
+        self.keywordCountTextLabel.grid(column=0,row=0,sticky="e")
+        self.keywordCountNumberLabel = ttk.Label(self.keywordCountFrame,textvariable=self.keytextWordCount)
+        self.keywordCountNumberLabel.grid(column=1,row=0,sticky="w")
+
+
+
+
         for child in self.dictBrowserFrame.winfo_children():
-            child.grid_configure(padx=5, pady=5)
+            child.grid_configure(padx=5,pady=5)
 
         self.plaintextDisplay = ScrolledText(self.dictBrowserFrame,width=40,height=10,wrap=WORD)
         self.plaintextDisplay.grid(column=7,row=0)
@@ -104,20 +154,10 @@ class KnotGUI:
         self.keysubtextDisplay = ScrolledText(self.dictBrowserFrame,width=40,height=10,wrap=WORD)
         self.keysubtextDisplay.grid(column=8,row=2)
 
-        self.wordCountFrame = ttk.Frame(self.dictBrowserFrame)
-        self.wordCountFrame.grid(column=7,row=1)
-        self.wordCountTextLabel = ttk.Label(self.wordCountFrame,text="Word Count:")
-        self.wordCountTextLabel.grid(column=0,row=0,sticky="e")
-        self.wordCountNumberLabel = ttk.Label(self.wordCountFrame,textvariable=self.plaintextWordCount)
-        self.wordCountNumberLabel.grid(column=1,row=0,sticky="w")
+
 
         # Row 2
-        self.dictSizeFrame = ttk.Frame(self.dictBrowserFrame)
-        self.dictSizeFrame.grid(column=3,row=3)
-        self.dictSizeTextLabel = ttk.Label(self.dictSizeFrame,text="Dictionary Size:")
-        self.dictSizeTextLabel.grid(column=0,row=0,sticky="e")
-        self.dictSizeNumberLabel = ttk.Label(self.dictSizeFrame,textvariable=self.dicttextSize)
-        self.dictSizeNumberLabel.grid(column=1,row=0,sticky="w")
+
 
 
         # Row 3
@@ -170,11 +210,13 @@ class KnotGUI:
     def selectOTPKey(self):
         self.selectFiles("dicttext","keytext")
         self.keytextWords = dg.splitToWords(self.keytext.get())
+        self.keytextWordCount.set(len(self.keytextWords))
 
     def clearPlaintext(self):
         self.plaintext.set("")
         self.plaintextWords = []
         self.plaintextWordCount.set(0)
+        self.plaintextListbox.delete(0,END)
 
     def clearOTPKey(self):
         x=1
