@@ -82,7 +82,7 @@ class KnotGUI:
 
         # Dictionary Browser
         # TODO: Create subframes
-        self.dictBrowserFrame = ttk.Frame(self.master)
+        self.dictBrowserFrame = ttk.Frame(self.mainframe)
         self.dictBrowserFrame.grid(column=0,row=0,sticky='we')
         self.folderButton = ttk.Button(self.dictBrowserFrame,text="Select Folder >",command=self.openFolder)
         self.folderButton.grid(column=0,row=1,sticky='ns')
@@ -93,6 +93,8 @@ class KnotGUI:
 
         self.dictSelectionFrame = ttk.Frame(self.dictBrowserFrame)
         self.dictSelectionFrame.grid(column=2,row=1)
+        self.dictSelectionFrame.columnconfigure(0,minsize=120)
+
         self.selectDicttext = ttk.Button(self.dictSelectionFrame,text="> Dictionary >",command=self.selectDicttext)
         self.selectDicttext.grid(column=0,row=0,sticky='ew')
 
@@ -106,9 +108,10 @@ class KnotGUI:
         self.dicttextListbox = Listbox(self.dictBrowserFrame,selectmode=EXTENDED)
         self.dicttextListbox.grid(column=3,row=0,rowspan=3,sticky='news')
 
+        # Setup Plaintext Frame
         self.plaintextFrame = ttk.Frame(self.dictBrowserFrame)
         self.plaintextFrame.grid(column=4,row=0,sticky='news')
-
+        # Setup Buttons Subframe
         self.plaintextButtonsFrame = ttk.Frame(self.plaintextFrame)
         self.plaintextButtonsFrame.grid(column = 0,row=0,sticky="ns")
         self.plaintextButtonsFrame.rowconfigure(0,weight=1)
@@ -117,46 +120,43 @@ class KnotGUI:
         self.selectPlaintextButton.grid(column=0,row=0,sticky="news")
         self.clearPlaintextButton = ttk.Button(self.plaintextButtonsFrame,text="Clear Plaintext", command = self.clearPlaintext)
         self.clearPlaintextButton.grid(column=0,row=1,sticky='news')
-
+        # Setup Wordcount Subframe
         self.wordCountFrame = ttk.Frame(self.plaintextButtonsFrame)
         self.wordCountFrame.grid(column=0,row=2)
         self.wordCountTextLabel = ttk.Label(self.wordCountFrame,text="Word Count:")
         self.wordCountTextLabel.grid(column=0,row=0,sticky="e")
         self.wordCountNumberLabel = ttk.Label(self.wordCountFrame,textvariable=self.plaintextWordCount)
         self.wordCountNumberLabel.grid(column=1,row=0,sticky="w")
-
+        # Finish Plaintext Frame
         self.plaintextListbox = Listbox(self.plaintextFrame,selectmode=BROWSE)
         self.plaintextListbox.grid(column=1,row=0,sticky='ew')
-
         self.plaintextDisplay = ScrolledText(self.plaintextFrame,width=40,height=10,wrap=WORD)
         self.plaintextDisplay.grid(column=2,row=0)
         self.subtextDisplay = ScrolledText(self.plaintextFrame,width=40,height=10,wrap=WORD)
         self.subtextDisplay.grid(column=3,row=0)
 
+        # Setup Keytext Frame
         self.keytextFrame = ttk.Frame(self.dictBrowserFrame)
         self.keytextFrame.grid(column=4,row=2,sticky='news')
-
+        # Setup Buttons Subframe
         self.keytextButtonsFrame = ttk.Frame(self.keytextFrame)
         self.keytextButtonsFrame.grid(column = 0,row=0,sticky="ns")
         self.keytextButtonsFrame.rowconfigure(0,weight=1)
         self.keytextButtonsFrame.columnconfigure(0,minsize = 120)
-        self.selectotpKeyButton = ttk.Button(self.keytextButtonsFrame,text="> OTP Key >",command = self.selectOTPKey)
+        self.selectotpKeyButton = ttk.Button(self.keytextButtonsFrame,text="> Vigenere Key >",command = self.selectOTPKey)
         self.selectotpKeyButton.grid(column=0,row=0,sticky="news")
-        self.clearKeytextButton = ttk.Button(self.keytextButtonsFrame,text="Clear OTP Key", command = self.clearOTPKey)
+        self.clearKeytextButton = ttk.Button(self.keytextButtonsFrame,text="Clear Vigenere Key", command = self.clearOTPKey)
         self.clearKeytextButton.grid(column=0,row=1,sticky='news')
-
-
-
+        # Setup Wordcount Subframe
         self.keywordCountFrame = ttk.Frame(self.keytextButtonsFrame)
         self.keywordCountFrame.grid(column=0,row=2)
         self.keywordCountTextLabel = ttk.Label(self.keywordCountFrame,text="Word Count:")
         self.keywordCountTextLabel.grid(column=0,row=0,sticky="e")
         self.keywordCountNumberLabel = ttk.Label(self.keywordCountFrame,textvariable=self.keytextWordCount)
         self.keywordCountNumberLabel.grid(column=1,row=0,sticky="w")
-
+        # Finish Keytext Frame
         self.keytextListbox = Listbox(self.keytextFrame,selectmode=BROWSE)
         self.keytextListbox.grid(column=1,row=0,sticky='ew')
-
         self.keytextDisplay = ScrolledText(self.keytextFrame,width=40,height=10,wrap=WORD)
         self.keytextDisplay.grid(column=2,row=0)
         self.keysubtextDisplay = ScrolledText(self.keytextFrame,width=40,height=10,wrap=WORD)
@@ -171,19 +171,12 @@ class KnotGUI:
         for child in self.keytextFrame.winfo_children():
             child.grid_configure(padx=2)
 
-        ttk.Label(self.plaintextFrame,text="files").grid(column=1,row=2)
 
 
-
-        # Row 2
-
-
-
-        # Row 3
+        # Transcription Buttons Frame
         self.substitutionButtonFrame = ttk.Frame(self.mainframe)
-        self.substitutionButtonFrame.grid(column=0,row=3,sticky="w")
-        self.substitutionButton = ttk.Button(self.substitutionButtonFrame,text="Substitution Cipher",command = self.runSubstitution)
-        self.substitutionButton.grid(column=0,row=2,columnspan=2,sticky='news')
+        self.substitutionButtonFrame.grid(column=1,row=0,sticky="ews")
+
         self.dropDownMenu = ttk.OptionMenu(self.substitutionButtonFrame, self.knotRowSize, *self.knotRowSizeChoices)
         self.dropDownMenu.grid(column=0,row=0,sticky='ew')
         self.dropDownMenuLabel = ttk.Label(self.substitutionButtonFrame, text="Knots/Row")
@@ -192,30 +185,33 @@ class KnotGUI:
         self.knotPrintStyleMenu.grid(column=0,row=1,sticky='ew')
         self.knotPrintStyleMenuLabel = ttk.Label(self.substitutionButtonFrame, text="Formatting")
         self.knotPrintStyleMenuLabel.grid(column=1,row=1,sticky='w')
+        self.substitutionButton = ttk.Button(self.substitutionButtonFrame,text="Run",command = self.runSubstitution)
+        self.substitutionButton.grid(column=0,row=2,columnspan=2,sticky='news')
+        self.saveButton = ttk.Button(self.substitutionButtonFrame,text="Save",command=self.saveFile)
+        self.saveButton.grid(column=0,row=3,columnspan=2,sticky='news')
+        self.closeButton = ttk.Button(self.substitutionButtonFrame, text="Close", command=self.master.quit)
+        self.closeButton.grid(column=0,row=4,columnspan=2,sticky='news')
 
-        # Row 4
-        self.ciphertextDisplay = ScrolledText(self.mainframe,width=100,height=10,wrap=WORD)
-        self.ciphertextDisplay.grid(column=0,row=4,columnspan=5,sticky='w')
 
-        # Row 5
-        self.knottextDisplay = ScrolledText(self.mainframe,width=100,height=10,wrap=WORD)
-        self.knottextDisplay.grid(column=0,row=5,columnspan=5,sticky='w')
+        # Transcription Display Frame
+        self.transcriptionFrame = ttk.Frame(self.mainframe)
+        self.transcriptionFrame.grid(column=0,row=5,columnspan=2,sticky='news')
+        self.transcriptionFrame.columnconfigure(0,weight=1)
 
-        # Row 6
-        self.decrypttextDisplay = ScrolledText(self.mainframe,width=100,height=10,wrap=WORD)
-        self.decrypttextDisplay.grid(column=0,row=6,columnspan=5,sticky='w')
+        self.ciphertextDisplay = ScrolledText(self.transcriptionFrame,width=100,height=8,wrap=WORD)
+        self.ciphertextDisplay.grid(column=0,row=0,sticky='news')
+        self.decrypttextDisplay = ScrolledText(self.transcriptionFrame,width=100,height=8,wrap=WORD)
+        self.decrypttextDisplay.grid(column=0,row=1,sticky='news')
+        self.knottextDisplay = ScrolledText(self.transcriptionFrame,width=100,height=8,wrap=WORD)
+        self.knottextDisplay.grid(column=0,row=2,sticky='news')
+        ttk.Label(self.transcriptionFrame,text="VIGENERE CIPHERTEXT").grid(column=1,row=0)
+        ttk.Label(self.transcriptionFrame,text="INVERTED CIPHERTEXT").grid(column=1,row=1)
+        ttk.Label(self.transcriptionFrame,text="KNOT TRANSCRIPTION").grid(column=1,row=2)
 
-        # Row 10
-        self.saveButton = ttk.Button(self.mainframe,text="Save",command=self.saveFile)
-        self.saveButton.grid(column=0,row=10,stick='w')
-
-        # Row 11
-        self.closeButton = ttk.Button(self.mainframe, text="Close", command=self.master.quit)
-        self.closeButton.grid(column=0,row=11,sticky='w')
 
         # Padding
         for child in self.mainframe.winfo_children():
-            child.grid_configure(padx=2, pady=5)
+            child.grid_configure(padx=20, pady=5)
 
     def openFolder(self):
         self.sourceDirectory = filedialog.askdirectory()
