@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter.scrolledtext import ScrolledText
 from tkinter import ttk
+from datetime import datetime
 
 import os
 
@@ -81,7 +82,6 @@ class KnotGUI:
             rows += 1
 
         # Dictionary Browser
-        # TODO: Create subframes
         self.dictBrowserFrame = ttk.Frame(self.mainframe)
         self.dictBrowserFrame.grid(column=0,row=0,sticky='we')
         self.folderButton = ttk.Button(self.dictBrowserFrame,text="Select Folder >",command=self.openFolder)
@@ -270,18 +270,23 @@ class KnotGUI:
         self.decrypttext.set(" ".join(self.decrypttextWords))
 
         # Knot String Formatting
-        # TODO: Add ability to choose between knottextformatting
         strFormatter = getattr(strUtil,"formatKnots"+self.knotPrintStyle.get())
         self.knottext.set(strFormatter(self.knottextWords,self.knotRowSize.get()))
 
     def saveFile(self):
-        # TODO: Improve file/directory naming
-        # TODO: Decide if it should create new directory, or deposit in pre-existing directory.
         saveDirectory = filedialog.askdirectory()
-        os.mkdir(saveDirectory+"/scores/")
-        with open(saveDirectory+"/scores/knottext.txt",'w') as file:
+        saveDirectory = saveDirectory + "/exports_"+datetime.now().strftime("%Y_%m_%d_%H_%M_%S")+"/"
+        print("Exporting Files to "+saveDirectory)
+        os.mkdir(saveDirectory)
+        with open(saveDirectory+"knottext.txt",'w') as file:
             file.write(self.knottext.get())
-        with open(saveDirectory+"/scores/subtext.txt",'w') as file:
+        with open(saveDirectory+"ciphertext.txt",'w') as file:
+            file.write(self.ciphertext.get())
+        with open(saveDirectory+"invertedciphertext.txt",'w') as file:
+            file.write(self.decrypttext.get())
+        with open(saveDirectory+"keytext.txt",'w') as file:
+            file.write(self.keysubtext.get())
+        with open(saveDirectory+"plaintext.txt",'w') as file:
             file.write(self.subtext.get())
 
     def scrolledTextUpdater(self,objectName,*args):
