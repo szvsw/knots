@@ -11,6 +11,8 @@ def substitutionCipher(plaintext,dict):
 def otpCipher(plaintext,keytext,modulus):
     # TODO: combine substitution of plaintext and keytext with this function
     newText = []
+    if len(keytext)==0:
+        return plaintext
     for i in range(0,len(plaintext)):
         newnum = (plaintext[i]+keytext[i%len(keytext)]) % modulus
         newText.append(newnum)
