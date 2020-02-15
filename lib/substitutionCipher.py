@@ -12,10 +12,7 @@ def otpCipher(plaintext,keytext,modulus):
     # TODO: combine substitution of plaintext and keytext with this function
     newText = []
     for i in range(0,len(plaintext)):
-        pad = 0
-        if (i<len(keytext)):
-            pad = keytext[i]
-        newnum = (plaintext[i]+pad) % modulus
+        newnum = (plaintext[i]+keytext[i%len(keytext)]) % modulus
         newText.append(newnum)
     return newText
 
