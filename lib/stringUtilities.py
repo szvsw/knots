@@ -2,8 +2,9 @@
 def formatInts(integerList):
     s = ""
     for i in integerList:
-        s = s+str(i)+"."
-    s = s[0:len(s)-1] ## truncate last character
+        # s = s+str(i)+"."
+        s = s + "["+"{:04d}".format(i)+"]"
+    s = s[0:len(s)-1] ## truncate last character - get rid of this when using s formatting
     return s
 
 # Pretty Printing Function
@@ -26,13 +27,18 @@ def formatKnotsPretty(knotList,rowSize):
     while currentRow*rowSize < len(knotList):
         knotRow = knotList[currentRow*rowSize:(currentRow*rowSize+rowSize)]
         s=s+"\n--- ROW %03d ---\n" % currentRow
+        if (currentRow%2)!=0:
+            s = s+"     "
         for knot in knotRow:
-            s = s+knot[0]+"|"+knot[1]+"  "
+            s = s+knot[0]+"|"+knot[1]+"       "
         s = s+"\n"
+        if (currentRow%2)!=0:
+            s = s+"     "
         for knot in knotRow:
-            s = s+knot[2]+"|"+knot[3]+"  "
+            s = s+knot[2]+"|"+knot[3]+"       "
         s=s+"\n"
         currentRow = currentRow + 1
+		
     return s
 
 def fileToStr(path):
