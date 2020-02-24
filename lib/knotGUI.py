@@ -65,7 +65,7 @@ class KnotGUI:
         self.knottext.trace('w',self.scrolledTextUpdater)
         self.knotRowSize = IntVar(name="knotRowSize")
         self.knotRowSize.set(1) # set the default option
-        self.knotRowSizeChoices = [i for i in range(1,10)]
+        self.knotRowSizeChoices = [i for i in range(1,30)]
         self.knotPrintStyleChoices = ["Simple", "Pretty"]
         self.knotPrintStyle = StringVar(name="knotPrintStyle")
         self.knotPrintStyle.set("")
