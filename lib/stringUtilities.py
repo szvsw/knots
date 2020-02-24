@@ -1,10 +1,16 @@
 # Pretty Printing Function
-def formatInts(integerList):
+def formatInts(integerList,opts):
     s = ""
     for i in integerList:
-        # s = s+str(i)+"."
-        s = s + "["+"{:04d}".format(i)+"]"
-    s = s[0:len(s)-1] ## truncate last character - get rid of this when using s formatting
+        if opts['delimited'] == False:
+            s = s+"{:04d}".format(i)
+        else:
+            formatter = "{:01d}"
+            if opts['formatting'] == "zeros":
+                formatter = "{:04d}"
+            s = opts['delimiterL']+formatter.format(i)+opts['delimiterR']+opts['delimiterC']
+    if opts['delimiterC'] != "":
+        s = s[0:len(s)-1] ## truncate last character - get rid of this when using s formatting
     return s
 
 # Pretty Printing Function
@@ -38,7 +44,7 @@ def formatKnotsPretty(knotList,rowSize):
             s = s+knot[2]+"|"+knot[3]+"       "
         s=s+"\n"
         currentRow = currentRow + 1
-		
+
     return s
 
 def fileToStr(path):

@@ -10,7 +10,8 @@ from lib import dictGenerator as dg
 from lib import substitutionCipher as sc
 from lib import stringUtilities as strUtil
 
-class KnotGUI:
+
+class MainWindow:
 
     # Constructor
     def __init__(self,parent,width,height):
@@ -69,6 +70,8 @@ class KnotGUI:
         self.knotPrintStyleChoices = ["Simple", "Pretty"]
         self.knotPrintStyle = StringVar(name="knotPrintStyle")
         self.knotPrintStyle.set("")
+
+        self.delimiterOpts = {'delimited' : False, 'delimiterR' : "", 'delimiterL' : "", 'delimiterC' : ".", 'formatting':"zeros"}
 
         # Create Gridframe
         self.mainframe = ttk.Frame(self.master)
@@ -263,9 +266,9 @@ class KnotGUI:
         self.decrypttextWords = sc.decrypt(self.dict,self.ciphertextWords)
 
         # Numerical String Generation
-        self.subtext.set(strUtil.formatInts(self.subtextWords))
-        self.keysubtext.set(strUtil.formatInts(self.keysubtextWords))
-        self.ciphertext.set(strUtil.formatInts(self.ciphertextWords))
+        self.subtext.set(strUtil.formatInts(self.subtextWords, self.delimiterOpts))
+        self.keysubtext.set(strUtil.formatInts(self.keysubtextWords, self.delimiterOpts))
+        self.ciphertext.set(strUtil.formatInts(self.ciphertextWords, self.delimiterOpts))
 
         self.decrypttext.set(" ".join(self.decrypttextWords))
 
