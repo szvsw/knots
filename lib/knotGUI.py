@@ -34,13 +34,15 @@ class MainWindow:
         self.dictBrowserFrame = ttk.Frame(self.mainframe)
         self.dictBrowserFrame.grid(column=0,row=0,sticky='we')
 
-        self.substitutionButtonFrame = ttk.Frame(self.mainframe)
-        self.substitutionButtonFrame.grid(column=0,row=2,sticky="w")
-        self.substitutionButtonFrame.columnconfigure(0,weight=1)
+
 
         self.transcriptionFrame = ttk.Frame(self.mainframe)
         self.transcriptionFrame.grid(column=0,row=1,sticky='news')
         self.transcriptionFrame.columnconfigure(0,weight=1)
+
+        self.substitutionButtonFrame = ttk.Frame(self.mainframe)
+        self.substitutionButtonFrame.grid(column=0,row=2,sticky="ew")
+        self.substitutionButtonFrame.columnconfigure(0,weight=1)
 
         ###################### Create Children Objects ######################
         self.printOpts = pg.PrintGUI(self)
@@ -109,8 +111,7 @@ class MainWindow:
         self.plaintextListbox.grid(column=1,row=0,sticky='ew')
         self.plaintextDisplay = ScrolledText(self.plaintextFrame,width=40,height=10,wrap=WORD)
         self.plaintextDisplay.grid(column=2,row=0)
-        self.subtextDisplay = ScrolledText(self.plaintextFrame,width=40,height=10,wrap=WORD)
-        self.subtextDisplay.grid(column=3,row=0)
+
 
         # Setup Keytext Frame
         self.keytextFrame = ttk.Frame(self.dictBrowserFrame)
@@ -136,8 +137,7 @@ class MainWindow:
         self.keytextListbox.grid(column=1,row=0,sticky='ew')
         self.keytextDisplay = ScrolledText(self.keytextFrame,width=40,height=10,wrap=WORD)
         self.keytextDisplay.grid(column=2,row=0)
-        self.keysubtextDisplay = ScrolledText(self.keytextFrame,width=40,height=10,wrap=WORD)
-        self.keysubtextDisplay.grid(column=3,row=0)
+
 
         for child in self.dictBrowserFrame.winfo_children():
             child.grid_configure(padx=2,pady=5)
@@ -158,25 +158,28 @@ class MainWindow:
         self.substitutionButton.grid(column=1,row=0,sticky='news')
         self.saveButton = ttk.Button(self.substitutionButtonFrame,text="Save",command=self.saveFile)
         self.saveButton.grid(column=2,row=0,sticky='news')
+
+
+        self.showSubtextBtn = ttk.Button(self.substitutionButtonFrame,text="Show Plaintext Substitution", command = self.subtext.show)
+        self.showSubtextBtn.grid(column=0,row=1,sticky='news')
+        self.showKeysubtextBtn = ttk.Button(self.substitutionButtonFrame,text="Show Keytext Substitution", command = self.keysubtext.show)
+        self.showKeysubtextBtn.grid(column=1,row=1,sticky='news')
+        self.showDecrypttextBtn = ttk.Button(self.substitutionButtonFrame,text="Show Inverted Ciphertext", command = self.decrypttext.show)
+        self.showDecrypttextBtn.grid(column=2,row=1,sticky='news')
+
+
         self.closeButton = ttk.Button(self.substitutionButtonFrame, text="Close", command=self.master.quit)
-        self.closeButton.grid(column=3,row=0,sticky='news')
+        self.closeButton.grid(column=0,row=3,columnspan=3,sticky='news')
 
         for i in range(0,3):
             self.substitutionButtonFrame.columnconfigure(i,weight=1)
 
 
         # Transcription Display Frame
-
         self.ciphertextDisplay = ScrolledText(self.transcriptionFrame,width=100,height=8,wrap=WORD)
-        self.ciphertextDisplay.grid(column=0,row=0,sticky='news')
-        self.decrypttextDisplay = ScrolledText(self.transcriptionFrame,width=100,height=8,wrap=WORD)
-        self.decrypttextDisplay.grid(column=0,row=1,sticky='news')
+        self.ciphertextDisplay.grid(column=0,row=0,columnspan = 2, sticky='news')
         self.knottextDisplay = ScrolledText(self.transcriptionFrame,width=100,height=8,wrap=WORD)
-        self.knottextDisplay.grid(column=0,row=2,sticky='news')
-        ttk.Label(self.transcriptionFrame,text="VIGENERE CIPHERTEXT").grid(column=1,row=0)
-        ttk.Label(self.transcriptionFrame,text="INVERTED CIPHERTEXT").grid(column=1,row=1)
-        ttk.Label(self.transcriptionFrame,text="KNOT TRANSCRIPTION").grid(column=1,row=2)
-
+        self.knottextDisplay.grid(column=0,row=1,columnspan = 2, sticky='news')
 
         # Padding
         for child in self.mainframe.winfo_children():
@@ -220,15 +223,14 @@ class MainWindow:
         # Set destination StringVar
         getattr(self,destination).text.set(text)
 
-    ## TODO: make clears methods of to.TextObject.
     def clearPlaintext(self):
-        self.plaintext.clear()
         self.plaintextListbox.delete(0,END)
+        self.plaintext.clear()
         self.subtext.clear()
 
     def clearOTPKey(self):
-        self.keytext.clear()
         self.keytextListbox.delete(0,END)
+        self.keytext.clear()
         self.keysubtext.clear()
 
     def runSubstitution(self):
