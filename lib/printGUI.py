@@ -10,7 +10,7 @@ class PrintGUI:
         self.frame.grid(row=0,column=0,sticky='news')
         self.window.protocol("WM_DELETE_WINDOW", self.window.withdraw)
         self.window.title("Subwindow")
-        self.window.columnconfigure(0,minsize=120)
+        self.window.columnconfigure(0,minsize=200,weight=1)
 
         self.orientationChoices = ["Rows", "Rows", "Columns"]
         self.orientation = StringVar(name = "orientation")
@@ -49,6 +49,7 @@ class PrintGUI:
             self.labels[menu].grid(column=0,row=menuCounter,sticky='e')
             menuCounter+=1
 
+
         self.orientation.trace('w',self.optsCallback)
         self.delimiter.trace('w',self.optsCallback)
         self.padding.trace('w',self.optsCallback)
@@ -57,21 +58,28 @@ class PrintGUI:
 
         self.hideBtn = ttk.Button(self.frame, text="Go",command=self.hide)
         self.hideBtn.grid(columnspan=2,column=0,row=menuCounter,sticky="news")
+        self.labels['Padding'].grid_forget()
+        self.menus['Padding'].grid_forget()
 
         self.frame.grid_configure(padx=10,pady=10)
+        self.frame.columnconfigure(1,minsize=120)
+
+
+
 
         self.window.withdraw()
 
 
     def optsCallback(self,objectName,*args):
         if objectName == "delimiter":
-            if getattr(self,objectName).get() == "None (Padded)":
+            if getattr(self,"delimiter").get() == "None (Padded)":
                 self.padding.set("Padded")
                 self.labels['Padding'].grid_forget()
                 self.menus['Padding'].grid_forget()
             else:
                 self.labels['Padding'].grid(column=0,row=2,sticky="e")
                 self.menus['Padding'].grid(column=1,row=2,sticky="we")
+
 
     def hide(self):
         self.window.withdraw()
