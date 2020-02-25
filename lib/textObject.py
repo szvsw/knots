@@ -24,7 +24,7 @@ class TextObject:
 
     def stringCallback(self,name,*args):
         if name!="dicttext":
-            if name == "knottext" or name == "plaintext" or name =="keytext":
+            if name == "knottext" or name == "plaintext" or name =="keytext" or name == "ciphertext":
                 display = getattr(self.parent,name+"Display")
                 display.config(state=NORMAL)
                 display.delete(1.0,END)

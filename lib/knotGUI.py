@@ -25,7 +25,7 @@ class MainWindow:
         self.mainframe = ttk.Frame(self.master)
         self.mainframe.grid(column=0,row=1,sticky='news')
         rows = 0
-        while rows < 50:
+        while rows < 3:
             self.mainframe.rowconfigure(rows,minsize=10)
             self.mainframe.columnconfigure(rows,weight=1)
             rows += 1
