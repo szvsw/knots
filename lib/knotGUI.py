@@ -150,6 +150,8 @@ class MainWindow:
 
 
 
+
+
         ###################### Transcription Buttons Frame ######################
 
         self.showPrintOptsWindowBtn = ttk.Button(self.substitutionButtonFrame,text="Printing Options",command = self.printOpts.show)
@@ -184,6 +186,9 @@ class MainWindow:
         # Padding
         for child in self.mainframe.winfo_children():
             child.grid_configure(padx=20,pady=5)
+
+        for child in self.transcriptionFrame.winfo_children():
+            child.grid_configure(pady=3)
 
     def openFolder(self):
         self.sourceDirectory = filedialog.askdirectory()
