@@ -178,7 +178,7 @@ class MainWindow:
         # Transcription Display Frame
         self.ciphertextDisplay = ScrolledText(self.transcriptionFrame,width=100,height=8,wrap=WORD)
         self.ciphertextDisplay.grid(column=0,row=0,columnspan = 2, sticky='news')
-        self.knottextDisplay = ScrolledText(self.transcriptionFrame,width=100,height=8,wrap=WORD)
+        self.knottextDisplay = ScrolledText(self.transcriptionFrame,width=100,height=8,wrap=NONE)
         self.knottextDisplay.grid(column=0,row=1,columnspan = 2, sticky='news')
 
         # Padding

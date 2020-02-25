@@ -39,18 +39,28 @@ def formatKnotsPretty(knotList,rowSize):
     while currentRow*rowSize < len(knotList):
         knotRow = knotList[currentRow*rowSize:(currentRow*rowSize+rowSize)]
         s=s+"\n--- ROW %03d ---\n" % currentRow
+        # Column Labeling
+        for i in range(1,rowSize*2+1):
+            if (i%2 != 0 and currentRow%2 ==0) or (i%2==0 and currentRow%2!=0):
+                s=s+"COL"+"{:02d}".format(i)+"  "
+            elif (i%2!=0 and currentRow%2 !=0) or (i%2==0 and currentRow%2==0):
+                s = s+"       "
+        s=s+"\n"
+        # Offset
         if (currentRow%2)!=0:
-            s = s+"     "
+            s = s+"       "
+        # Top Halves
         for knot in knotRow:
-            s = s+knot[0]+"|"+knot[1]+"       "
+            s = s+knot[0]+"|"+knot[1]+"         "
         s = s+"\n"
+        # Offset
         if (currentRow%2)!=0:
-            s = s+"     "
+            s = s+"       "
+        # Bottom Halves
         for knot in knotRow:
-            s = s+knot[2]+"|"+knot[3]+"       "
+            s = s+knot[2]+"|"+knot[3]+"         "
         s=s+"\n"
         currentRow = currentRow + 1
-
     return s
 
 def fileToStr(path):
