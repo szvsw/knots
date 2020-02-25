@@ -9,7 +9,7 @@ import os
 from lib import dictGenerator as dg
 from lib import substitutionCipher as sc
 from lib import stringUtilities as strUtil
-
+from lib import printGUI as pg
 
 class MainWindow:
 
@@ -18,9 +18,32 @@ class MainWindow:
         # Configure Window
         self.master = parent
         self.master.title("Knot Transcription")
-        self.master.geometry(str(width)+"x"+str(height))
+        # self.master.geometry(str(width)+"x"+str(height))
 
-        # GUI State Fields
+        # Create Gridframe
+        self.mainframe = ttk.Frame(self.master)
+        self.mainframe.grid(column=0,row=1,sticky='news')
+        rows = 0
+        while rows < 50:
+            self.mainframe.rowconfigure(rows, minsize=10)
+            self.mainframe.columnconfigure(rows,weight=1)
+            rows += 1
+
+        ###################### Create Subframes ######################
+        self.dictBrowserFrame = ttk.Frame(self.mainframe)
+        self.dictBrowserFrame.grid(column=0,row=0,sticky='we')
+
+        self.substitutionButtonFrame = ttk.Frame(self.mainframe)
+        self.substitutionButtonFrame.grid(column=0,row=1,columnspan=2,sticky="news")
+
+        self.transcriptionFrame = ttk.Frame(self.mainframe)
+        self.transcriptionFrame.grid(column=0,row=5,columnspan=2,sticky='news')
+        self.transcriptionFrame.columnconfigure(0,weight=1)
+
+        ###################### Create Popups ######################
+        self.printOpts = pg.PrintGUI(self)
+
+        ###################### GUI State Fields ######################
         self.sourceDirectory = ""
 
         self.dict = {}
@@ -64,34 +87,12 @@ class MainWindow:
         self.knottext = StringVar(name="knottext")
         self.knottext.set("")
         self.knottext.trace('w',self.scrolledTextUpdater)
-        self.knotRowSize = IntVar(name="knotRowSize")
-        self.knotRowSize.set(1) # set the default option
-        self.knotRowSizeChoices = [i for i in range(1,30)]
-        self.knotPrintStyleChoices = ["Simple", "Pretty"]
-        self.knotPrintStyle = StringVar(name="knotPrintStyle")
-        self.knotPrintStyle.set("")
 
-        self.delimiterOpts = {'delimited' : False, 'delimiterR' : "", 'delimiterL' : "", 'delimiterC' : ".", 'formatting':"zeros"}
-
-        # Create Gridframe
-        self.mainframe = ttk.Frame(self.master)
-        self.mainframe.grid(column=0,row=1,sticky='news')
-
-        # create default grid sizing?
-        rows = 0
-        while rows < 50:
-            self.mainframe.rowconfigure(rows, minsize=10)
-            self.mainframe.columnconfigure(rows,weight=1)
-            rows += 1
-
-        # Dictionary Browser
-        self.dictBrowserFrame = ttk.Frame(self.mainframe)
-        self.dictBrowserFrame.grid(column=0,row=0,sticky='we')
+        ###################### Dictionary Browser Frame ######################
         self.folderButton = ttk.Button(self.dictBrowserFrame,text="Select Folder >",command=self.openFolder)
         self.folderButton.grid(column=0,row=1,sticky='ns')
         self.directoryListbox = Listbox(self.dictBrowserFrame,selectmode=EXTENDED)
         self.directoryListbox.grid(column=1,row=0,rowspan=3,sticky='news')
-
 
 
         self.dictSelectionFrame = ttk.Frame(self.dictBrowserFrame)
@@ -176,30 +177,22 @@ class MainWindow:
 
 
 
-        # Transcription Buttons Frame
-        self.substitutionButtonFrame = ttk.Frame(self.mainframe)
-        self.substitutionButtonFrame.grid(column=1,row=0,sticky="ews")
+        ###################### Transcription Buttons Frame ######################
 
-        self.dropDownMenu = ttk.OptionMenu(self.substitutionButtonFrame, self.knotRowSize, *self.knotRowSizeChoices)
-        self.dropDownMenu.grid(column=0,row=0,sticky='ew')
-        self.dropDownMenuLabel = ttk.Label(self.substitutionButtonFrame, text="Knots/Row")
-        self.dropDownMenuLabel.grid(column=1,row=0,sticky='w')
-        self.knotPrintStyleMenu = ttk.OptionMenu(self.substitutionButtonFrame,self.knotPrintStyle, *self.knotPrintStyleChoices)
-        self.knotPrintStyleMenu.grid(column=0,row=1,sticky='ew')
-        self.knotPrintStyleMenuLabel = ttk.Label(self.substitutionButtonFrame, text="Formatting")
-        self.knotPrintStyleMenuLabel.grid(column=1,row=1,sticky='w')
+        self.showPrintOptsWindowBtn = ttk.Button(self.substitutionButtonFrame,text="Printing Options",command = self.printOpts.show)
+        self.showPrintOptsWindowBtn.grid(column=0,row=0,sticky='news')
         self.substitutionButton = ttk.Button(self.substitutionButtonFrame,text="Run",command = self.runSubstitution)
-        self.substitutionButton.grid(column=0,row=2,columnspan=2,sticky='news')
+        self.substitutionButton.grid(column=0,row=2,sticky='news')
         self.saveButton = ttk.Button(self.substitutionButtonFrame,text="Save",command=self.saveFile)
-        self.saveButton.grid(column=0,row=3,columnspan=2,sticky='news')
+        self.saveButton.grid(column=0,row=3,sticky='news')
         self.closeButton = ttk.Button(self.substitutionButtonFrame, text="Close", command=self.master.quit)
-        self.closeButton.grid(column=0,row=4,columnspan=2,sticky='news')
+        self.closeButton.grid(column=0,row=4,sticky='news')
+
+        for i in range(0,3):
+            self.substitutionButtonFrame.columnconfigure(i,weight=1)
 
 
         # Transcription Display Frame
-        self.transcriptionFrame = ttk.Frame(self.mainframe)
-        self.transcriptionFrame.grid(column=0,row=5,columnspan=2,sticky='news')
-        self.transcriptionFrame.columnconfigure(0,weight=1)
 
         self.ciphertextDisplay = ScrolledText(self.transcriptionFrame,width=100,height=8,wrap=WORD)
         self.ciphertextDisplay.grid(column=0,row=0,sticky='news')
@@ -266,15 +259,15 @@ class MainWindow:
         self.decrypttextWords = sc.decrypt(self.dict,self.ciphertextWords)
 
         # Numerical String Generation
-        self.subtext.set(strUtil.formatInts(self.subtextWords, self.delimiterOpts))
-        self.keysubtext.set(strUtil.formatInts(self.keysubtextWords, self.delimiterOpts))
-        self.ciphertext.set(strUtil.formatInts(self.ciphertextWords, self.delimiterOpts))
+        self.subtext.set(strUtil.formatInts(self.subtextWords, self.printOpts))
+        self.keysubtext.set(strUtil.formatInts(self.keysubtextWords, self.printOpts))
+        self.ciphertext.set(strUtil.formatInts(self.ciphertextWords, self.printOpts))
 
         self.decrypttext.set(" ".join(self.decrypttextWords))
 
         # Knot String Formatting
-        strFormatter = getattr(strUtil,"formatKnots"+self.knotPrintStyle.get())
-        self.knottext.set(strFormatter(self.knottextWords,self.knotRowSize.get()))
+        strFormatter = getattr(strUtil,"formatKnots"+self.printOpts.knotPrintStyle.get())
+        self.knottext.set(strFormatter(self.knottextWords,self.printOpts.blockSize.get()))
 
     def saveFile(self):
         saveDirectory = filedialog.askdirectory()

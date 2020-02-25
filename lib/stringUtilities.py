@@ -1,16 +1,23 @@
 # Pretty Printing Function
-def formatInts(integerList,opts):
+def formatInts(integerList,optsObj):
     s = ""
+    delimiterL = ""
+    delimiterC = ""
+    delimiterR = ""
+    formatter = "{:01d}"
+    if len(optsObj.delimiter.get())==1 or optsObj.delimiter.get() == "<space>":
+        delimiterC = optsObj.delimiter.get()
+    elif optsObj.delimiter.get() == "None (Padded)" or optsObj.padding.get() == "Padded":
+        formatter = "{:04d}"
+    if len(optsObj.delimiter.get())==2:
+        delimiterL = optsObj.delimiter.get()[0]
+        delimiterR = optsObj.delimiter.get()[1]
+
     for i in integerList:
-        if opts['delimited'] == False:
-            s = s+"{:04d}".format(i)
-        else:
-            formatter = "{:01d}"
-            if opts['formatting'] == "zeros":
-                formatter = "{:04d}"
-            s = opts['delimiterL']+formatter.format(i)+opts['delimiterR']+opts['delimiterC']
-    if opts['delimiterC'] != "":
-        s = s[0:len(s)-1] ## truncate last character - get rid of this when using s formatting
+        s = s+delimiterL+formatter.format(i)+delimiterR+delimiterC
+        if delimiterC != "":
+            s = s[0:len(s)-1] # truncate last character - get rid of this when using s formatting
+
     return s
 
 # Pretty Printing Function
