@@ -25,9 +25,9 @@ class PrintGUI:
         self.padding.set("Padded")
 
         self.blockSizeChoices = [i for i in range(1,30)]
-        self.blockSizeChoices.insert(0,10)
+        self.blockSizeChoices.insert(0,6)
         self.blockSize = IntVar(name="blockSize")
-        self.blockSize.set(10)
+        self.blockSize.set(6)
 
         self.knotPrintStyleChoices = ["Pretty", "Pretty","Simple"]
         self.knotPrintStyle = StringVar(name = "knotPrintStyle")
