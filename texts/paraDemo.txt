@@ -1,0 +1,8 @@
+this is a paragraph!
+
+Here's a new paragraph.
+
+and another.
+
+Python doesn’t directly support paragraph-oriented file reading, but, as usual, it’s not hard to add such functionality. We define a paragraph as a string formed by joining a nonempty sequence of nonseparator lines, separated from any adjoining paragraphs by nonempty sequences of separator lines. By default, a separator line is one that equals '\n' (empty line), although this concept is easy to generalize. We let the client code determine what a separator is when instantiating this class. Any string is acceptable, but we append a '\n' to it, if it doesn’t already end with '\n' (since we read the underlying file line by line, a separator not ending with '\n' would never match).
+

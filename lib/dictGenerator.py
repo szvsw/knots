@@ -5,11 +5,15 @@ import re
 # TODO: GUI should optionally define delmiters
 # TODO: Delimiters should be passed in and iterated over recursively
 def splitToWords(plaintext):
+    plaintext = plaintext.lower()
     splittext = []
     words = re.split('(\W)',plaintext) # Uses standard regexp '\W' word def
     for word in words: # filter out unwanted chars
-        if word!=' ' and word!='\n' and word!='\r' and word!='\r\n' and word!='':
-            splittext.append(word)
+        if word!=' ' and word!='\r' and word!='' and word!= "." and word != "," and word != ";" and word != ":" and word != "!" and word !="?" and word!="-" and word!= "\'" and word!= "/" and word != "(" and word!=")" and word!="\"":
+            if  word=='\n':
+                splittext.append("COLOR")
+            else:
+                splittext.append(word)
     return splittext
 
 # convert text list to dictionary
