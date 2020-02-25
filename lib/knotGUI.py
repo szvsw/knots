@@ -41,8 +41,16 @@ class MainWindow:
         self.transcriptionFrame.grid(column=0,row=5,columnspan=2,sticky='news')
         self.transcriptionFrame.columnconfigure(0,weight=1)
 
-        ###################### Create Popups ######################
+        ###################### Create Children Objects ######################
         self.printOpts = pg.PrintGUI(self)
+
+        self.plaintext = to.TextObject(self,"plaintext")
+        self.keytext = to.TextObject(self,"keytext")
+        self.subtext = to.TextObject(self,"subtext")
+        self.keysubtext = to.TextObject(self,"keysubtext")
+        self.ciphertext = to.TextObject(self,"ciphertext")
+        self.decrypttext = to.TextObject(self,"decrypttext")
+        self.knottext = to.TextObject(self,"knottext")
 
         ###################### GUI State Fields ######################
         self.sourceDirectory = ""
@@ -52,13 +60,7 @@ class MainWindow:
 
         self.dicttextSize = IntVar(name="dicttextSize")
 
-        self.plaintext = to.TextObject(self,"plaintext")
-        self.keytext = to.TextObject(self,"keytext")
-        self.subtext = to.TextObject(self,"subtext")
-        self.keysubtext = to.TextObject(self,"keysubtext")
-        self.ciphertext = to.TextObject(self,"ciphertext")
-        self.decrypttext = to.TextObject(self,"decrypttext")
-        self.knottext = to.TextObject(self,"knottext")
+
 
 
 
