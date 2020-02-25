@@ -12,11 +12,10 @@ def formatInts(integerList,optsObj):
     if len(optsObj.delimiter.get())==2:
         delimiterL = optsObj.delimiter.get()[0]
         delimiterR = optsObj.delimiter.get()[1]
-
     for i in integerList:
         s = s+delimiterL+formatter.format(i)+delimiterR+delimiterC
-        if delimiterC != "":
-            s = s[0:len(s)-1] # truncate last character - get rid of this when using s formatting
+    if delimiterC != "":
+        s = s[0:len(s)-1] # truncate last character - get rid of this when using s formatting
 
     return s
 

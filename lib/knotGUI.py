@@ -10,6 +10,7 @@ from lib import dictGenerator as dg
 from lib import substitutionCipher as sc
 from lib import stringUtilities as strUtil
 from lib import printGUI as pg
+from lib import textObject as to
 
 class MainWindow:
 
@@ -47,46 +48,19 @@ class MainWindow:
         self.sourceDirectory = ""
 
         self.dict = {}
-        self.dicttext = StringVar(name="dicttext")
-        self.dicttext.set("")
+        self.dicttext = to.TextObject(self,"dicttext")
+
         self.dicttextSize = IntVar(name="dicttextSize")
 
-        self.plaintext = StringVar(name="plaintext")
-        self.plaintext.set("")
-        self.plaintext.trace('w',self.scrolledTextUpdater)
-        self.plaintextWords = []
-        self.plaintextWordCount = IntVar(name="plaintextWordCount")
+        self.plaintext = to.TextObject(self,"plaintext")
+        self.keytext = to.TextObject(self,"keytext")
+        self.subtext = to.TextObject(self,"subtext")
+        self.keysubtext = to.TextObject(self,"keysubtext")
+        self.ciphertext = to.TextObject(self,"ciphertext")
+        self.decrypttext = to.TextObject(self,"decrypttext")
+        self.knottext = to.TextObject(self,"knottext")
 
-        self.keytext = StringVar(name="keytext")
-        self.keytext.set("")
-        self.keytext.trace('w',self.scrolledTextUpdater)
-        self.keytextWords = []
-        self.keytextWordCount = IntVar(name="keytextWordCount")
 
-        self.subtext = StringVar(name="subtext")
-        self.subtext.set("")
-        self.subtext.trace('w',self.scrolledTextUpdater)
-        self.subtextWords = []
-
-        self.keysubtext = StringVar(name="keysubtext")
-        self.keysubtext.set("")
-        self.keysubtext.trace('w',self.scrolledTextUpdater)
-        self.keysubtextWords = []
-
-        self.ciphertext = StringVar(name="ciphertext")
-        self.ciphertext.set("")
-        self.ciphertext.trace('w',self.scrolledTextUpdater)
-        self.ciphertextWords = []
-
-        self.decrypttext = StringVar(name="decrypttext")
-        self.decrypttext.set("")
-        self.decrypttext.trace('w',self.scrolledTextUpdater)
-        self.decrypttextWords = []
-
-        self.knottextWords = []
-        self.knottext = StringVar(name="knottext")
-        self.knottext.set("")
-        self.knottext.trace('w',self.scrolledTextUpdater)
 
         ###################### Dictionary Browser Frame ######################
         self.folderButton = ttk.Button(self.dictBrowserFrame,text="Select Folder >",command=self.openFolder)
@@ -129,7 +103,7 @@ class MainWindow:
         self.wordCountFrame.grid(column=0,row=2)
         self.wordCountTextLabel = ttk.Label(self.wordCountFrame,text="Word Count:")
         self.wordCountTextLabel.grid(column=0,row=0,sticky="e")
-        self.wordCountNumberLabel = ttk.Label(self.wordCountFrame,textvariable=self.plaintextWordCount)
+        self.wordCountNumberLabel = ttk.Label(self.wordCountFrame,textvariable=self.plaintext.wordCount)
         self.wordCountNumberLabel.grid(column=1,row=0,sticky="w")
         # Finish Plaintext Frame
         self.plaintextListbox = Listbox(self.plaintextFrame,selectmode=BROWSE)
@@ -156,7 +130,7 @@ class MainWindow:
         self.keywordCountFrame.grid(column=0,row=2)
         self.keywordCountTextLabel = ttk.Label(self.keywordCountFrame,text="Word Count:")
         self.keywordCountTextLabel.grid(column=0,row=0,sticky="e")
-        self.keywordCountNumberLabel = ttk.Label(self.keywordCountFrame,textvariable=self.keytextWordCount)
+        self.keywordCountNumberLabel = ttk.Label(self.keywordCountFrame,textvariable=self.keytext.wordCount)
         self.keywordCountNumberLabel.grid(column=1,row=0,sticky="w")
         # Finish Keytext Frame
         self.keytextListbox = Listbox(self.keytextFrame,selectmode=BROWSE)
@@ -219,79 +193,15 @@ class MainWindow:
 
     def selectDicttext(self):
         self.selectFiles("directory","dicttext")
-        dictWords = dg.splitToWords(self.dicttext.get())
+        dictWords = dg.splitToWords(self.dicttext.text.get())
         self.dict,dictsize = dg.createDict(dictWords)
         self.dicttextSize.set(dictsize)
 
     def selectPlaintext(self):
         self.selectFiles("dicttext","plaintext")
-        self.plaintextWords = dg.splitToWords(self.plaintext.get())
-        self.plaintextWordCount.set(len(self.plaintextWords))
 
     def selectOTPKey(self):
         self.selectFiles("dicttext","keytext")
-        self.keytextWords = dg.splitToWords(self.keytext.get())
-        self.keytextWordCount.set(len(self.keytextWords))
-
-    def clearPlaintext(self):
-        self.plaintext.set("")
-        self.plaintextWords = []
-        self.plaintextWordCount.set(0)
-        self.plaintextListbox.delete(0,END)
-        self.subtext.set("")
-        self.subtextWords = []
-
-    def clearOTPKey(self):
-        self.keytext.set("")
-        self.keytextWords = []
-        self.keytextWordCount.set(0)
-        self.keytextListbox.delete(0,END)
-        self.keysubtext.set("")
-        self.keysubtextWords = []
-
-    def runSubstitution(self):
-        # Transcoding
-        self.subtextWords = sc.substitutionCipher(self.plaintextWords,self.dict)
-        self.keysubtextWords = sc.substitutionCipher(self.keytextWords,self.dict)
-        self.ciphertextWords = sc.otpCipher(self.subtextWords,self.keysubtextWords,self.dicttextSize.get())
-        self.knottextWords = [*map(sc.intToKnot,self.ciphertextWords)]
-
-        self.decrypttextWords = sc.decrypt(self.dict,self.ciphertextWords)
-
-        # Numerical String Generation
-        self.subtext.set(strUtil.formatInts(self.subtextWords, self.printOpts))
-        self.keysubtext.set(strUtil.formatInts(self.keysubtextWords, self.printOpts))
-        self.ciphertext.set(strUtil.formatInts(self.ciphertextWords, self.printOpts))
-
-        self.decrypttext.set(" ".join(self.decrypttextWords))
-
-        # Knot String Formatting
-        strFormatter = getattr(strUtil,"formatKnots"+self.printOpts.knotPrintStyle.get())
-        self.knottext.set(strFormatter(self.knottextWords,self.printOpts.blockSize.get()))
-
-    def saveFile(self):
-        saveDirectory = filedialog.askdirectory()
-        saveDirectory = saveDirectory + "/exports_"+datetime.now().strftime("%Y_%m_%d_%H_%M_%S")+"/"
-        print("Exporting Files to "+saveDirectory)
-        os.mkdir(saveDirectory)
-        with open(saveDirectory+"knottext.txt",'w') as file:
-            file.write(self.knottext.get())
-        with open(saveDirectory+"ciphertext.txt",'w') as file:
-            file.write(self.ciphertext.get())
-        with open(saveDirectory+"invertedciphertext.txt",'w') as file:
-            file.write(self.decrypttext.get())
-        with open(saveDirectory+"keytext.txt",'w') as file:
-            file.write(self.keysubtext.get())
-        with open(saveDirectory+"plaintext.txt",'w') as file:
-            file.write(self.subtext.get())
-
-    def scrolledTextUpdater(self,objectName,*args):
-        # Overwrite scrolled text when traced StringVar changes
-        obj = getattr(self,objectName+"Display")
-        obj.config(state=NORMAL)
-        obj.delete(1.0,END)
-        obj.insert(END,getattr(self,objectName).get())
-        obj.config(state=DISABLED)
 
     def selectFiles(self,source,destination):
         # Get source Listbox selected indices as filenames
@@ -309,4 +219,51 @@ class MainWindow:
             getattr(self,destination+"Listbox").insert(END,file)
 
         # Set destination StringVar
-        getattr(self,destination).set(text)
+        getattr(self,destination).text.set(text)
+
+    ## TODO: make clears methods of to.TextObject.
+    def clearPlaintext(self):
+        self.plaintext.text.set("")
+        self.plaintextListbox.delete(0,END)
+        self.subtext.text.set("")
+
+    def clearOTPKey(self):
+        self.keytext.text.set("")
+        self.keytextListbox.delete(0,END)
+        self.keysubtext.text.set("")
+
+    def runSubstitution(self):
+        # Transcoding
+        self.subtext.splits = sc.substitutionCipher(self.plaintext.splits,self.dict)
+        self.keysubtext.splits = sc.substitutionCipher(self.keytext.splits,self.dict)
+        self.ciphertext.splits = sc.otpCipher(self.subtext.splits,self.keysubtext.splits,self.dicttextSize.get())
+        self.knottext.splits = [*map(sc.intToKnot,self.ciphertext.splits)]
+
+        self.decrypttext.splits = sc.decrypt(self.dict,self.ciphertext.splits)
+
+        # Numerical String Generation
+        self.subtext.text.set(strUtil.formatInts(self.subtext.splits, self.printOpts))
+        self.keysubtext.text.set(strUtil.formatInts(self.keysubtext.splits, self.printOpts))
+        self.ciphertext.text.set(strUtil.formatInts(self.ciphertext.splits, self.printOpts))
+
+        self.decrypttext.text.set(" ".join(self.decrypttext.splits))
+
+        # Knot String Formatting
+        strFormatter = getattr(strUtil,"formatKnots"+self.printOpts.knotPrintStyle.get())
+        self.knottext.text.set(strFormatter(self.knottext.splits,self.printOpts.blockSize.get()))
+
+    def saveFile(self):
+        saveDirectory = filedialog.askdirectory()
+        saveDirectory = saveDirectory + "/exports_"+datetime.now().strftime("%Y_%m_%d_%H_%M_%S")+"/"
+        print("Exporting Files to "+saveDirectory)
+        os.mkdir(saveDirectory)
+        with open(saveDirectory+"knottext.txt",'w') as file:
+            file.write(self.knottext.text.get())
+        with open(saveDirectory+"ciphertext.txt",'w') as file:
+            file.write(self.ciphertext.text.get())
+        with open(saveDirectory+"invertedciphertext.txt",'w') as file:
+            file.write(self.decrypttext.text.get())
+        with open(saveDirectory+"keytext.txt",'w') as file:
+            file.write(self.keysubtext.text.get())
+        with open(saveDirectory+"plaintext.txt",'w') as file:
+            file.write(self.subtext.text.get())
