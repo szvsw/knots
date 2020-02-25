@@ -9,7 +9,7 @@ class PrintGUI:
         self.frame =  Frame(self.window)
         self.frame.grid(row=0,column=0,sticky='news')
         self.window.protocol("WM_DELETE_WINDOW", self.window.withdraw)
-        self.window.title("Subwindow")
+        self.window.title("Print Options")
         self.window.columnconfigure(0,minsize=200,weight=1)
 
         self.orientationChoices = ["Rows", "Rows", "Columns"]
