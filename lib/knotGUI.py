@@ -249,7 +249,7 @@ class MainWindow:
 
         # Knot String Formatting
         strFormatter = getattr(strUtil,"formatKnots"+self.printOpts.knotPrintStyle.get())
-        self.knottext.text.set(strFormatter(self.knottext.splits,self.printOpts.blockSize.get()))
+        self.knottext.text.set(strFormatter(self.knottext.splits,self.printOpts))
 
     def saveFile(self):
         saveDirectory = filedialog.askdirectory()
