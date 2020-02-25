@@ -25,9 +25,9 @@ class PrintGUI:
         self.padding.set("Padded")
 
         self.blockSizeChoices = [i for i in range(1,30)]
-        self.blockSizeChoices.insert(0,1)
+        self.blockSizeChoices.insert(0,10)
         self.blockSize = IntVar(name="blockSize")
-        self.blockSize.set(1)
+        self.blockSize.set(10)
 
         self.knotPrintStyleChoices = ["Pretty", "Pretty","Simple"]
         self.knotPrintStyle = StringVar(name = "knotPrintStyle")
@@ -56,7 +56,7 @@ class PrintGUI:
         self.blockSize.trace('w',self.optsCallback)
         self.knotPrintStyle.trace('w',self.optsCallback)
 
-        self.hideBtn = ttk.Button(self.frame, text="Go",command=self.hide)
+        self.hideBtn = ttk.Button(self.frame, text="Run",command=self.hide)
         self.hideBtn.grid(columnspan=2,column=0,row=menuCounter,sticky="news")
         self.labels['Padding'].grid_forget()
         self.menus['Padding'].grid_forget()
