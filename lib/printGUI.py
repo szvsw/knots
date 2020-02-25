@@ -83,6 +83,7 @@ class PrintGUI:
 
     def hide(self):
         self.window.withdraw()
+        self.parent.runSubstitution()
 
     def show(self):
         self.window.deiconify()

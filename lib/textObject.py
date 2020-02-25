@@ -24,3 +24,8 @@ class TextObject:
             if name == "plaintext" or name == "keytext":
                 self.splits = dg.splitToWords(self.text.get())
                 self.wordCount.set(len(self.splits))
+
+    def clear(self):
+        self.text.set("")
+
+    # TODO: Give each a listbox & popup window which can be viewed with a single click.

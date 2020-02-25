@@ -26,7 +26,7 @@ class MainWindow:
         self.mainframe.grid(column=0,row=1,sticky='news')
         rows = 0
         while rows < 50:
-            self.mainframe.rowconfigure(rows, minsize=10)
+            self.mainframe.rowconfigure(rows,minsize=10)
             self.mainframe.columnconfigure(rows,weight=1)
             rows += 1
 
@@ -35,10 +35,11 @@ class MainWindow:
         self.dictBrowserFrame.grid(column=0,row=0,sticky='we')
 
         self.substitutionButtonFrame = ttk.Frame(self.mainframe)
-        self.substitutionButtonFrame.grid(column=0,row=1,columnspan=2,sticky="news")
+        self.substitutionButtonFrame.grid(column=0,row=2,sticky="w")
+        self.substitutionButtonFrame.columnconfigure(0,weight=1)
 
         self.transcriptionFrame = ttk.Frame(self.mainframe)
-        self.transcriptionFrame.grid(column=0,row=5,columnspan=2,sticky='news')
+        self.transcriptionFrame.grid(column=0,row=1,sticky='news')
         self.transcriptionFrame.columnconfigure(0,weight=1)
 
         ###################### Create Children Objects ######################
@@ -59,10 +60,6 @@ class MainWindow:
         self.dicttext = to.TextObject(self,"dicttext")
 
         self.dicttextSize = IntVar(name="dicttextSize")
-
-
-
-
 
         ###################### Dictionary Browser Frame ######################
         self.folderButton = ttk.Button(self.dictBrowserFrame,text="Select Folder >",command=self.openFolder)
@@ -158,11 +155,11 @@ class MainWindow:
         self.showPrintOptsWindowBtn = ttk.Button(self.substitutionButtonFrame,text="Printing Options",command = self.printOpts.show)
         self.showPrintOptsWindowBtn.grid(column=0,row=0,sticky='news')
         self.substitutionButton = ttk.Button(self.substitutionButtonFrame,text="Run",command = self.runSubstitution)
-        self.substitutionButton.grid(column=0,row=2,sticky='news')
+        self.substitutionButton.grid(column=1,row=0,sticky='news')
         self.saveButton = ttk.Button(self.substitutionButtonFrame,text="Save",command=self.saveFile)
-        self.saveButton.grid(column=0,row=3,sticky='news')
+        self.saveButton.grid(column=2,row=0,sticky='news')
         self.closeButton = ttk.Button(self.substitutionButtonFrame, text="Close", command=self.master.quit)
-        self.closeButton.grid(column=0,row=4,sticky='news')
+        self.closeButton.grid(column=3,row=0,sticky='news')
 
         for i in range(0,3):
             self.substitutionButtonFrame.columnconfigure(i,weight=1)
@@ -183,7 +180,7 @@ class MainWindow:
 
         # Padding
         for child in self.mainframe.winfo_children():
-            child.grid_configure(padx=20, pady=5)
+            child.grid_configure(padx=20,pady=5)
 
     def openFolder(self):
         self.sourceDirectory = filedialog.askdirectory()
@@ -225,14 +222,14 @@ class MainWindow:
 
     ## TODO: make clears methods of to.TextObject.
     def clearPlaintext(self):
-        self.plaintext.text.set("")
+        self.plaintext.clear()
         self.plaintextListbox.delete(0,END)
-        self.subtext.text.set("")
+        self.subtext.clear()
 
     def clearOTPKey(self):
-        self.keytext.text.set("")
+        self.keytext.clear()
         self.keytextListbox.delete(0,END)
-        self.keysubtext.text.set("")
+        self.keysubtext.clear()
 
     def runSubstitution(self):
         # Transcoding
@@ -240,14 +237,12 @@ class MainWindow:
         self.keysubtext.splits = sc.substitutionCipher(self.keytext.splits,self.dict)
         self.ciphertext.splits = sc.otpCipher(self.subtext.splits,self.keysubtext.splits,self.dicttextSize.get())
         self.knottext.splits = [*map(sc.intToKnot,self.ciphertext.splits)]
-
         self.decrypttext.splits = sc.decrypt(self.dict,self.ciphertext.splits)
 
         # Numerical String Generation
         self.subtext.text.set(strUtil.formatInts(self.subtext.splits, self.printOpts))
         self.keysubtext.text.set(strUtil.formatInts(self.keysubtext.splits, self.printOpts))
         self.ciphertext.text.set(strUtil.formatInts(self.ciphertext.splits, self.printOpts))
-
         self.decrypttext.text.set(" ".join(self.decrypttext.splits))
 
         # Knot String Formatting
