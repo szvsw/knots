@@ -9,7 +9,7 @@ def formatInts(integerList,optsObj):
         delimiterC = optsObj.delimiter.get()
     elif optsObj.delimiter.get() == "<space>":
         delimiterC = " "
-    elif optsObj.delimiter.get() == "None (Padded)" or optsObj.padding.get() == "Padded":
+    if optsObj.delimiter.get() == "None (Padded)" or optsObj.padding.get() == "Padded":
         formatter = "{:04d}"
     if len(optsObj.delimiter.get())==2:
         delimiterL = optsObj.delimiter.get()[0]
