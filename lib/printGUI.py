@@ -58,8 +58,8 @@ class PrintGUI:
 
         self.hideBtn = ttk.Button(self.frame, text="Run",command=self.hide)
         self.hideBtn.grid(columnspan=2,column=0,row=menuCounter,sticky="news")
-        self.labels['Padding'].grid_forget()
-        self.menus['Padding'].grid_forget()
+        self.labels['Padding'].grid_remove()
+        self.menus['Padding'].grid_remove()
 
         self.frame.grid_configure(padx=10,pady=10)
         self.frame.columnconfigure(1,minsize=120)
@@ -74,11 +74,11 @@ class PrintGUI:
         if objectName == "delimiter":
             if getattr(self,"delimiter").get() == "None (Padded)":
                 self.padding.set("Padded")
-                self.labels['Padding'].grid_forget()
-                self.menus['Padding'].grid_forget()
+                self.labels['Padding'].grid_remove()
+                self.menus['Padding'].grid_remove()
             else:
-                self.labels['Padding'].grid(column=0,row=2,sticky="e")
-                self.menus['Padding'].grid(column=1,row=2,sticky="we")
+                self.labels['Padding'].grid()
+                self.menus['Padding'].grid()
 
 
     def hide(self):
