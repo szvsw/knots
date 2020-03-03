@@ -11,15 +11,19 @@ def splitToWords(plaintext):
     for word in words: # filter out unwanted chars
         if word!=' ' and word!='\r' and word!='' and word!= "." and word != "," and word != ";" and word != ":" and word != "!" and word !="?" and word!="-" and word!= "\'" and word!= "/" and word != "(" and word!=")" and word!="\"":
             if  word=='\n':
-                splittext.append("COLOR")
+                splittext.append("\\NEWLINE")
             else:
                 splittext.append(word)
+        elif word == "." or word == "!" or word == "?":
+            splittext.append("\\STOP")
     return splittext
 
 # convert text list to dictionary
 def createDict(wordList):
     dict = {}
-    id=0
+    dict['\\NEWLINE'] = {'id':-1, 'count' : 0}
+    dict['\\STOP'] = {'id':0, 'count' : 0}
+    id = 1
     for word in wordList:
         if word in dict: # increment count
             dict[word]['count'] = dict[word]['count']+1
