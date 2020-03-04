@@ -1,6 +1,5 @@
 from random import randint as ri
 
-# Pretty Printing Function
 def formatInts(integerList,optsObj):
     s = ""
     delimiterL = ""
@@ -23,7 +22,6 @@ def formatInts(integerList,optsObj):
 
     return s
 
-# Pretty Printing Function
 def formatKnotsSimple(knotList,optsObj):
     rowSize = optsObj.blockSize.get()
     orientation = optsObj.orientation.get()
@@ -38,7 +36,6 @@ def formatKnotsSimple(knotList,optsObj):
 
         currentRow = currentRow+1
     return s
-
 
 def formatKnotsPretty(knotList,optsObj):
     rowSize = optsObj.blockSize.get()
@@ -156,10 +153,25 @@ def formatKnotsVertical(knotList,optsObj): ## add spacing list arg
         slotLocation = slotLocation+1
     return s
 
-
 def fileToStr(path):
     text = ""
     with open(path) as lines:
         for line in lines:
             text = text+line
     return text
+
+def generateSpacingList(path):
+    spacingList = []
+    with open("./texts/spacingMatrix.txt") as lines:
+        lineStrings = lines.readlines()
+        numOfColumns = len(lineStrings[0])-1
+        for column in range(numOfColumns):
+            for row in lineStrings:
+                try:
+                    if row[column] != "\n":
+                        spacingList.append(row[column])
+                    else:
+                        spacingList.append("0")
+                except IndexError:
+                    spacingList.append("0")
+    return spacingList
