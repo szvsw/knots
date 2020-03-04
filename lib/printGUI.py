@@ -33,7 +33,7 @@ class PrintGUI:
         self.knotPrintStyle = StringVar(name = "knotPrintStyle")
         self.knotPrintStyle.set("Pretty")
 
-        self.menus = {  # 'Orientation': ttk.OptionMenu(self.frame, self.orientation, *self.orientationChoices), \
+        self.menus = {  'Orientation': ttk.OptionMenu(self.frame, self.orientation, *self.orientationChoices), \
                         'Delimiter': ttk.OptionMenu(self.frame, self.delimiter, *self.delimiterChoices), \
                         'Padding': ttk.OptionMenu(self.frame, self.padding, *self.paddingChoices), \
                         'Block Size': ttk.OptionMenu(self.frame, self.blockSize, *self.blockSizeChoices), \

@@ -253,7 +253,7 @@ class MainWindow:
         self.decrypttext.text.set(" ".join(self.decrypttext.splits))
 
         # Knot String Formatting
-        strFormatter = getattr(strUtil,"formatKnots"+self.printOpts.knotPrintStyle.get())
+        strFormatter = getattr(strUtil,"formatKnots"+self.printOpts.orientation.get()+self.printOpts.knotPrintStyle.get())
         self.knottext.text.set(strFormatter(self.knottext.splits,self.printOpts))
 
     def saveFile(self):

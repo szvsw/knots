@@ -22,7 +22,7 @@ def formatInts(integerList,optsObj):
 
     return s
 
-def formatKnotsSimple(knotList,optsObj):
+def formatKnotsRowsSimple(knotList,optsObj):
     rowSize = optsObj.blockSize.get()
     orientation = optsObj.orientation.get()
     currentRow = 0
@@ -37,7 +37,7 @@ def formatKnotsSimple(knotList,optsObj):
         currentRow = currentRow+1
     return s
 
-def formatKnotsPretty(knotList,optsObj):
+def formatKnotsRowsPretty(knotList,optsObj):
     rowSize = optsObj.blockSize.get()
     orientation = optsObj.orientation.get()
     currentRow = 0
@@ -120,18 +120,18 @@ def formatKnotsPretty(knotList,optsObj):
         s=s+"\n\n"
     return s
 
-def formatKnotsVertical(knotList,optsObj): ## add spacing list arg
+def formatKnotsColumnsSimple(knotList,optsObj): ## add spacing list arg
     textLocation = 0
     slotLocation = 0
     currentColumn = 0
     blockSize = optsObj.blockSize.get()
     orientation = optsObj.orientation.get()
     spacingList = [ri(0,1) for x in range(len(knotList)*100)]
-    s = "KNOT SCORE"
+    s = "KNOT SCORE\n"
     for slot in spacingList:
         if textLocation==len(knotList):
             break;
-        # if we are at teh start of a new row, create it!
+        # if we are at the start of a new row, create it!
         if slotLocation % blockSize == 0:
             s=s+"\n--- "+orientation[0:-1]+" %03d ---\n" % currentColumn
             currentColumn = currentColumn+1
@@ -150,6 +150,39 @@ def formatKnotsVertical(knotList,optsObj): ## add spacing list arg
             s = s+"\n"
         elif slot == " " or slot == "0" or slot == 0:
             s=s+"\n"
+        slotLocation = slotLocation+1
+    return s
+
+def formatKnotsColumnsPretty(knotList,optsObj): ## add spacing list arg
+    textLocation = 0
+    slotLocation = 0
+    currentColumn = 0
+    blockSize = optsObj.blockSize.get()
+    orientation = optsObj.orientation.get()
+    spacingList = [ri(0,1) for x in range(len(knotList)*100)]
+    s = "KNOT SCORE\n"
+    for slot in spacingList:
+        if textLocation==len(knotList):
+            break;
+        # if we are at the start of a new row, create it!
+        if slotLocation % blockSize == 0:
+            s=s+"-----\n"+orientation[0:-1]+" %03d\n" % currentColumn
+            currentColumn = currentColumn+1
+        # if the slot should have something in it, give it what it has
+        if slot == "x" or slot == "1" or slot == 1:
+            knot = knotList[textLocation]
+            s = s+"-----\n"+knot[0]+"|"+knot[1]+"\n"+knot[2]+"|"+knot[3]
+            textLocation = textLocation+1
+            if textLocation==len(knotList):
+                break;
+            while (knotList[textLocation] == "\\STOP" or knotList[textLocation]=="\\NEWLINE"):
+                s = s+" "+knotList[textLocation]
+                textLocation = textLocation +1
+                if textLocation==len(knotList):
+                    break;
+            s = s+"\n"
+        elif slot == " " or slot == "0" or slot == 0:
+            s=s+"-----\n\n\n"
         slotLocation = slotLocation+1
     return s
 
