@@ -21,9 +21,9 @@ def splitToWords(plaintext):
 # convert text list to dictionary
 def createDict(wordList):
     dict = {}
-    dict['\\NEWLINE'] = {'id':-1, 'count' : 0}
-    dict['\\STOP'] = {'id':0, 'count' : 0}
-    id = 1
+    dict['\\NEWLINE'] = {'id':0, 'count' : 0}
+    dict['\\STOP'] = {'id':1, 'count' : 0}
+    id = 2
     for word in wordList:
         if word in dict: # increment count
             dict[word]['count'] = dict[word]['count']+1
