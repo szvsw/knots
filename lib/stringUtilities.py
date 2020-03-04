@@ -159,7 +159,7 @@ def formatKnotsColumnsPretty(knotList,optsObj): ## add spacing list arg
     currentColumn = 0
     blockSize = optsObj.blockSize.get()
     orientation = optsObj.orientation.get()
-    spacingList = [ri(0,1) for x in range(len(knotList)*100)]
+    spacingList = optsObj.spacingList # [ri(0,1) for x in range(len(knotList)*100)]
     s = "KNOT SCORE\n"
     for slot in spacingList:
         if textLocation==len(knotList):
@@ -192,19 +192,3 @@ def fileToStr(path):
         for line in lines:
             text = text+line
     return text
-
-def generateSpacingList(path):
-    spacingList = []
-    with open("./texts/spacingMatrix.txt") as lines:
-        lineStrings = lines.readlines()
-        numOfColumns = len(lineStrings[0])-1
-        for column in range(numOfColumns):
-            for row in lineStrings:
-                try:
-                    if row[column] != "\n":
-                        spacingList.append(row[column])
-                    else:
-                        spacingList.append("0")
-                except IndexError:
-                    spacingList.append("0")
-    return spacingList

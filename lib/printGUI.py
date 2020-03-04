@@ -33,6 +33,9 @@ class PrintGUI:
         self.knotPrintStyle = StringVar(name = "knotPrintStyle")
         self.knotPrintStyle.set("Pretty")
 
+        self.spacerPath = StringVar(name = "spacerPath")
+        self.spacingList = []
+
         self.menus = {  'Orientation': ttk.OptionMenu(self.frame, self.orientation, *self.orientationChoices), \
                         'Delimiter': ttk.OptionMenu(self.frame, self.delimiter, *self.delimiterChoices), \
                         'Padding': ttk.OptionMenu(self.frame, self.padding, *self.paddingChoices), \
@@ -55,6 +58,7 @@ class PrintGUI:
         self.padding.trace('w',self.optsCallback)
         self.blockSize.trace('w',self.optsCallback)
         self.knotPrintStyle.trace('w',self.optsCallback)
+        self.spacerPath.trace('w',self.optsCallback)
 
         self.hideBtn = ttk.Button(self.frame, text="Run",command=self.hide)
         self.hideBtn.grid(columnspan=2,column=0,row=menuCounter,sticky="news")
@@ -79,6 +83,8 @@ class PrintGUI:
             else:
                 self.labels['Padding'].grid()
                 self.menus['Padding'].grid()
+        if objectName == "spacerPath":
+            self.generateSpacingList()
 
 
     def hide(self):
@@ -87,3 +93,19 @@ class PrintGUI:
 
     def show(self):
         self.window.deiconify()
+
+    def generateSpacingList(self):
+        spacingList = []
+        with open(self.spacerPath.get()) as lines:
+            lineStrings = lines.readlines()
+            numOfColumns = len(lineStrings[0])-1
+            for column in range(numOfColumns):
+                for row in lineStrings:
+                    try:
+                        if row[column] != "\n":
+                            spacingList.append(row[column])
+                        else:
+                            spacingList.append("0")
+                    except IndexError:
+                        spacingList.append("0")
+        self.spacingList = spacingList
