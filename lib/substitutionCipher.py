@@ -30,10 +30,15 @@ def digitToQuadrant(digit):
 def intToKnot(integer):
     digits = [0,0,0,0]
     knots = []
-    for i in range(4):
-        digits[i] = integer // 10**i % 10 # digit separator
-        knots.append(digitToQuadrant(digits[i]))
-    return knots
+    if integer == 0:
+        return "\\NEWLINE"
+    elif integer == 1:
+        return "\\STOP"
+    else:
+        for i in range(4):
+            digits[i] = integer // 10**i % 10 # digit separator
+            knots.append(digitToQuadrant(digits[i]))
+        return knots
 
 def invertID(dict,id):
     for key, value in dict.items():
