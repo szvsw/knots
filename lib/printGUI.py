@@ -98,6 +98,7 @@ class PrintGUI:
         spacingList = []
         with open(self.spacerPath.get()) as lines:
             lineStrings = lines.readlines()
+            lineStrings.replace(',','')
             numOfColumns = len(lineStrings[0])-1
             for column in range(numOfColumns):
                 for row in lineStrings:
