@@ -98,10 +98,11 @@ class PrintGUI:
         spacingList = []
         with open(self.spacerPath.get()) as lines:
             lineStrings = lines.readlines()
-            lineStrings.replace(',','')
-            numOfColumns = len(lineStrings[0])-1
+
+            numOfColumns = len(lineStrings[0].replace(",",""))-1
             for column in range(numOfColumns):
                 for row in lineStrings:
+                    row = row.replace(",","")
                     try:
                         if row[column] != "\n":
                             spacingList.append(row[column])

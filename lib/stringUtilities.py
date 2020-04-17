@@ -126,7 +126,7 @@ def formatKnotsColumnsSimple(knotList,optsObj): ## add spacing list arg
     currentColumn = 0
     blockSize = optsObj.blockSize.get()
     orientation = optsObj.orientation.get()
-    spacingList = [ri(0,1) for x in range(len(knotList)*100)]
+    spacingList = optsObj.spacingList
     s = "KNOT SCORE\n"
     for slot in spacingList:
         if textLocation==len(knotList):
